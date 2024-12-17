@@ -39,11 +39,10 @@ export default function RootLayout({
                 <header
                     className="flex justify-between items-center p-4 bg-opacity-50"
                 >
-                    <h1 className="text-lg font-bold text-black">Perpetua</h1>
+                    <h1 className="text-lg font-bold dark:text-white text-black">Perpetua</h1>
                     <button
                         onClick={toggleDarkMode}
-                        className={`px-4 py-2 rounded dark:bg-gray-300 ${darkMode ? "text-[#F8F8FF]" : "text-black"
-                            } bg-gray-800`}
+                        className="dark:bg-gray-800 dark:text-white text-black bg-gray-300 rounded px-4 py-2"
                     >
                         {darkMode ? 'Toggle Light Mode' : 'Toggle Dark Mode'}
                     </button>
