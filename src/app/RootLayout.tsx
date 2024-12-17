@@ -3,6 +3,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { useEffect, useState } from "react";
+import { toggleDarkMode } from '../../utils/darkModeToggle';
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -29,18 +30,6 @@ export default function RootLayout({
         }
     }, []);
 
-    const toggleDarkMode = () => {
-        const html = document.documentElement;
-        if (html.classList.contains("dark")) {
-            html.classList.remove('dark');
-            localStorage.setItem("theme", "light");
-            setDarkMode(false);
-        } else {
-            html.classList.add("dark");
-            localStorage.setItem("theme", "dark");
-            setDarkMode(true);
-        }
-    };
 
     return (
         <html lang="en">
