@@ -41,7 +41,10 @@ export default function RootLayout({
                 >
                     <h1 className="text-lg font-bold dark:text-white text-black">Perpetua</h1>
                     <button
-                        onClick={toggleDarkMode}
+                        onClick={() => {
+                            const newTheme = toggleDarkMode();
+                            setDarkMode(newTheme);
+                        }}
                         className="dark:bg-gray-800 dark:text-white text-black bg-gray-300 rounded px-4 py-2"
                     >
                         {darkMode ? 'Toggle Light Mode' : 'Toggle Dark Mode'}
