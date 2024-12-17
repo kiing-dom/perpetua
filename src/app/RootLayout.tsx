@@ -45,6 +45,7 @@ export default function RootLayout({
                         alt="logo"
                         width={150}
                         height={150}
+                        className="dark:white-image"
                     />
                     <button
                         onClick={() => {
