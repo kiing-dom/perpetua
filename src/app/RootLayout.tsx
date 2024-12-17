@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { useEffect, useState } from "react";
 import { toggleDarkMode } from '../../utils/darkModeToggle';
+import Image from "next/image";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -39,7 +40,12 @@ export default function RootLayout({
                 <header
                     className="flex justify-between items-center p-4 bg-opacity-50"
                 >
-                    <h1 className="text-lg font-bold dark:text-white text-black">Perpetua</h1>
+                    <Image
+                        src="/custom/PERPETUA.png"
+                        alt="logo"
+                        width={150}
+                        height={150}
+                    />
                     <button
                         onClick={() => {
                             const newTheme = toggleDarkMode();
