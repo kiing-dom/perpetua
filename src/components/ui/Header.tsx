@@ -19,7 +19,7 @@ export default function Navbar() {
     }, []);
 
     return (
-        <nav className="bg-[#0E0C0C] bg-opacity-20 text-neutral-200 shadow-md fixed top-4 left-1/2 transform -translate-x-1/2 w-auto z-50 rounded-full px-4 py-2 md:px-6 md:py-2">
+        <nav className="bg-[#0E0C0C] dark:bg-neutral-700 bg-opacity-20 shadow-md fixed top-4 left-1/2 transform -translate-x-1/2 w-auto z-50 rounded-full px-4 py-2 md:px-6 md:py-2">
             <div className="flex justify-between items-center">
                 <Link
                     href="/"
