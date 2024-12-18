@@ -37,7 +37,7 @@ export default function Navbar() {
                             const newTheme = toggleDarkMode();
                             setDarkMode(newTheme);
                         }}
-                        className="dark:bg-gray-800 dark:text-white text-black bg-gray-300 rounded px-4 py-2"
+                        className="dark:bg-gray-600 dark:text-white text-black bg-gray-300 rounded px-4 py-2 shadow-md"
                     >
                         {darkMode ? <FaRegSun /> : <FaRegMoon />}
                     </button>
