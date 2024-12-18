@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import RootLayout from "./RootLayout";
 import Footer from "../components/ui/Footer";
+import Header from "../components/ui/Header";
 
 // Metadata is exported from the server component
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <RootLayout>
+      <Header />
       {children}
       <Footer />  
     </RootLayout>
