@@ -21,15 +21,8 @@ export default function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const [darkMode, setDarkMode] = useState(false);
 
-    useEffect(() => {
-        const storedTheme = localStorage.getItem("theme");
-        if (storedTheme === "dark") {
-            document.documentElement.classList.add("dark");
-            setDarkMode(true);
-        }
-    }, []);
+    
 
 
     return (
@@ -38,15 +31,7 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased bg-custom-grid min-h-screen`}
             >
                 
-                    <button
-                        onClick={() => {
-                            const newTheme = toggleDarkMode();
-                            setDarkMode(newTheme);
-                        }}
-                        className="dark:bg-gray-800 dark:text-white text-black bg-gray-300 rounded px-4 py-2"
-                    >
-                        {darkMode ? 'Light Mode' : 'Dark Mode'}
-                    </button>
+                    
 
                 {children}
             </body>
