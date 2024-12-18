@@ -37,16 +37,7 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased bg-custom-grid min-h-screen`}
             >
-                <header
-                    className="flex justify-between items-center p-4 bg-opacity-50"
-                >
-                    <Image
-                        src="/custom/PERPETUA.png"
-                        alt="logo"
-                        width={150}
-                        height={150}
-                        className="dark:white-image"
-                    />
+                
                     <button
                         onClick={() => {
                             const newTheme = toggleDarkMode();
@@ -57,7 +48,6 @@ export default function RootLayout({
                         {darkMode ? 'Light Mode' : 'Dark Mode'}
                     </button>
 
-                </header>
                 {children}
             </body>
         </html>
