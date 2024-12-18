@@ -1,10 +1,5 @@
 export function toggleDarkMode() {
-    const html = document.documentElement;
-    if(html.classList.contains('dark')) {
-        html.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-    } else {
-        html.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-    }
+    const isDarkMode = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+    return isDarkMode;
 }

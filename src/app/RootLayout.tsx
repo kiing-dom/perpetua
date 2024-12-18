@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { useEffect, useState } from "react";
 import { toggleDarkMode } from '../../utils/darkModeToggle';
+import Image from "next/image";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -20,15 +21,8 @@ export default function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const [darkMode, setDarkMode] = useState(false);
 
-    useEffect(() => {
-        const storedTheme = localStorage.getItem("theme");
-        if (storedTheme === "dark") {
-            document.documentElement.classList.add("dark");
-            setDarkMode(true);
-        }
-    }, []);
+    
 
 
     return (
@@ -36,18 +30,9 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased bg-custom-grid min-h-screen`}
             >
-                <header
-                    className="flex justify-between items-center p-4 bg-opacity-50"
-                >
-                    <h1 className="text-lg font-bold dark:text-white text-black">Perpetua</h1>
-                    <button
-                        onClick={toggleDarkMode}
-                        className="dark:bg-gray-800 dark:text-white text-black bg-gray-300 rounded px-4 py-2"
-                    >
-                        {darkMode ? 'Toggle Light Mode' : 'Toggle Dark Mode'}
-                    </button>
+                
+                    
 
-                </header>
                 {children}
             </body>
         </html>
