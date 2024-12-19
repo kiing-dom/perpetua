@@ -20,7 +20,7 @@ export default function Dashboard() {
             <h1 className="text-2xl font-bold mb-4 dark:text-white text-neutral-600">My Notes</h1>
             <button
                 onClick={handleAddNote}
-                className=""
+                className="dark:bg-gray-500 bg-neutral-200 dark:text-white text-black font-bold rounded shadow px-2 py-2 mb-4"
             >
                 Add Note
             </button>
@@ -28,10 +28,10 @@ export default function Dashboard() {
                 {notes.map((note) => (
                     <div
                         key={note.id}
-                        className=""
+                        className="dark:bg-neutral-500 bg-neutral-200 bg-opacity-80 rounded px-2 py-2"
                     >
-                        <h2 className="text-lg font-bold">{note.title}</h2>
-                        <p className="text-md">{note.content}</p>
+                        <h2 className="dark:text-white text-black text-lg font-bold">{note.title}</h2>
+                        <p className="dark:text-white text-black text-md">{note.content}</p>
                     </div>
                 ))}
             </div>
