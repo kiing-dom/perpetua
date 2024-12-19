@@ -1,6 +1,5 @@
 "use client"
 
-import { title } from "process";
 import useNotesStore from "../../store/useNotesStore";
 
 export default function Dashboard() {
