@@ -10,6 +10,8 @@ type Note = {
 
 type NotesStore = {
     notes: Note[];
+    uid: string | null;
+    setUid: (uid: string) => void;
     fetchNotes: () => Promise<void>;
     addNote: (note: Omit<Note, "id">) => Promise<void>;
     deleteNote: (id: string) => Promise<void>;
@@ -17,6 +19,9 @@ type NotesStore = {
 
 const useNotesStore = create<NotesStore>((set) => ({
     notes: [],
+    uid: null,
+
+    setUid: (uid) => set({ uid }),
 
     fetchNotes: async () => {
         const querySnapshot = await getDocs(collection(db, "notes"));
