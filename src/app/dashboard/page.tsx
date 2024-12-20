@@ -1,17 +1,31 @@
 "use client"
 
 import useNotesStore from "../../store/useNotesStore";
+import { useState, useEffect } from 'react';
 
 export default function Dashboard() {
-    const {notes, addNote } = useNotesStore();
+    const {notes, fetchNotes, addNote, deleteNote } = useNotesStore();
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
 
-    const handleAddNote = () => {
-        const newNote = {
-            id: `${Date.now()}`,
-            title: `Note ${notes.length + 1}`,
-            content: `This is a new note!`,
-        };
-        addNote(newNote);
+    useEffect(() => {
+        fetchNotes();
+    }, [fetchNotes]);
+
+    const handleAddNote = async () => {
+        if(!title || !content) {
+            alert("Please provide both a title and content for the note");
+            return;
+        }
+
+        await addNote({ title, content });
+
+        setTitle('');
+        setContent('');
+    };
+
+    const handleDeleteNote = async (id: string) => {
+        await deleteNote(id);
     }
 
     return (
