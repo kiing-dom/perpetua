@@ -57,6 +57,21 @@ export default function Dashboard() {
                 >
                     Add Note <IoIosAddCircle size={32} />
                 </button>
+
+                {/* Listing Created Notes */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {notes.map((note) => (
+                        <div
+                            key={note.id}
+                            className="dark:bg-neutral-500 bg-neutral-200 bg-opacity-80 rounded shadow px-2 py-2"
+                        >
+                            <h2 className="dark:text-white text-black text-lg font-bold">{note.title}</h2>
+                            <p className="dark:text-white text-black text-md">{note.content}</p>
+                        </div>
+                    ))}
+                </div>
+
+                
             </div>
         </div>
     )
