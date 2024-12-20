@@ -2,7 +2,7 @@
 
 import useNotesStore from "../../store/useNotesStore";
 import { useState, useEffect } from 'react';
-import { IoIosAddCircle } from "react-icons/io";
+import { IoIosAddCircle, IoIosRemoveCircle } from "react-icons/io";
 
 export default function Dashboard() {
     const { notes, fetchNotes, addNote, deleteNote } = useNotesStore();
@@ -67,6 +67,12 @@ export default function Dashboard() {
                         >
                             <h2 className="dark:text-white text-black text-lg font-bold">{note.title}</h2>
                             <p className="dark:text-white text-black text-md">{note.content}</p>
+                            <button
+                                onClick={() => handleDeleteNote(note.id)}
+                                className="flex items-center gap-2 mt-2 dark:bg-red-500 bg-red-300 text-white font-bold rounded shadow px-2 py-1"
+                            >
+                                Delete <IoIosRemoveCircle />
+                            </button>
                         </div>
                     ))}
                 </div>
