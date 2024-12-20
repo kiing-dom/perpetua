@@ -32,12 +32,17 @@ export default function Navbar() {
                 </Link>
 
                 <div className="hidden md:flex items-center gap-4">
+                    <Link href="/dashboard" passHref legacyBehavior>
+                        <a className="text-neutral-700 font-bold dark:text-white hover:text-gray-300 dark:hover:text-gray-300">
+                            Dashboard
+                        </a>
+                    </Link>
                 <button
                         onClick={() => {
                             const newTheme = toggleDarkMode();
                             setDarkMode(newTheme);
                         }}
-                        className="dark:bg-gray-600 dark:text-white text-black bg-gray-300 rounded px-4 py-2 shadow-md"
+                        className="dark:bg-gray-600 dark:text-white text-black bg-gray-300 rounded px-4 py-2 shadow-md transition-colors"
                     >
                         {darkMode ? <FaRegSun /> : <FaRegMoon />}
                     </button>
