@@ -3,11 +3,16 @@
 import useNotesStore from "../../store/useNotesStore";
 import { useState, useEffect } from 'react';
 import { IoIosAddCircle, IoIosRemoveCircle } from "react-icons/io";
+import { Modal, Box, Typography, Button, TextField } from '@mui/material';
+import Login from "@/components/auth/login-form";
+import Register from "@/components/auth/registration-form";
 
 export default function Dashboard() {
-    const { notes, fetchNotes, addNote, deleteNote } = useNotesStore();
+    const { notes, fetchNotes, addNote, deleteNote, setUid } = useNotesStore();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(true);
+    const [isRegistered, setIsRegistered] = useState(true);
 
     useEffect(() => {
         fetchNotes();
@@ -29,8 +34,62 @@ export default function Dashboard() {
         await deleteNote(id);
     }
 
+    const handleLogin = async (uid: string) => {
+        setUid(uid);
+        setIsAuthModalOpen(false);
+    }
+
     return (
         <div className="min-h-screen p-6 my-6">
+
+            <Modal
+                open={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+                aria-labelledby="auth-modal-title"
+                aria-describedby="auth-modal-description"
+            >
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        bgcolor: "background.paper",
+                        borderRadius: 2,
+                        boxShadow: 24,
+                        p: 4,
+                        width: "90%",
+                        maxWidth: 400,
+                    }}
+                >
+                    <Typography
+                        id="auth-modal-title"
+                        variant="h6"
+                        component="h2"
+                        mb={2}
+                    >
+                        {isRegistered ? "Login" : "Register"}
+                    </Typography>
+
+                    {isRegistered ? (
+                        <Login onLogin={handleLogin} />
+                    ) : (
+                        <Register />
+                    )
+                    }
+
+                    <Button
+                        onClick={() => setIsRegistered(!isRegistered)}
+                        sx={{ mt: 2 }}
+                        fullWidth
+                    >
+                        {isRegistered ? "Switch to Register" : "Switch to Login"}
+                    </Button>
+
+                </Box>
+            </Modal>
+
+
             <h1 className="text-2xl font-bold mb-4 dark:text-white text-neutral-600">My Notes</h1>
 
             {/* Input Fields */}
@@ -77,7 +136,7 @@ export default function Dashboard() {
                     ))}
                 </div>
 
-                
+
             </div>
         </div>
     )
