@@ -43,12 +43,19 @@ export default function Dashboard() {
         setIsAuthModalOpen(false);
     }
 
+    const handleCloseModal = () => {
+        if(!isAuthenticated) {
+            setIsAuthModalOpen(true);
+            alert('You need to either log in or register first');
+        }
+    }
+
     return (
         <div className="min-h-screen p-6 my-6">
 
             <Modal
                 isOpen={isAuthModalOpen}
-                onClose={() => setIsAuthModalOpen(false)}
+                onClose={handleCloseModal}
                 title={isRegistered ? "Login" : "Register"}
                 aria-labelledby="auth-modal-title"
                 aria-describedby="auth-modal-description"
@@ -63,7 +70,7 @@ export default function Dashboard() {
 
                     <button
                         onClick={() => setIsRegistered(!isRegistered)}
-                        className="mt-4 w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        className="mt-4 w-full px-4 py-2 dark:bg-blue-700 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
                         {isRegistered ? "Switch to Register" : "Switch to Login"}
                     </button>
