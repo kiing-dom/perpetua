@@ -28,7 +28,7 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder='Email'
-                className='block w-full p-2 mb-4 h-12 bg-gray-200 rounded drop-shadow-md'
+                className='text-black block w-full p-2 mb-4 h-12 bg-gray-200 rounded drop-shadow-md'
             />
 
             <input
@@ -36,7 +36,7 @@ export default function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder='password'
-                className='block w-full p-2 mb-4 h-12 bg-gray-200 rounded drop-shadow-md'
+                className='text-black block w-full p-2 mb-4 h-12 bg-gray-200 rounded drop-shadow-md'
             />
 
             <div className='flex flex-col items-center'>
