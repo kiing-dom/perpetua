@@ -72,7 +72,7 @@ export default function Dashboard() {
                         onClick={() => setIsRegistered(!isRegistered)}
                         className="mt-4 w-full px-4 py-2 dark:bg-transparent bg-transparent dark:text-white text-black rounded hover:text-gray-500"
                     >
-                        {isRegistered ? "Switch to Register" : "Switch to Login"}
+                        {isRegistered ? "Don't Have and Account? Register" : "Already Have an Account? Login"}
                     </button>
 
             </Modal>
