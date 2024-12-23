@@ -11,7 +11,7 @@ export default function Register() {
             const user = await register(email, password);
             console.log("User registered: ", user);
         } catch (err) {
-            if(err instanceof Error) {
+            if (err instanceof Error) {
                 setError(err.message);
             } else {
                 setError("An unexpected error occurred");
@@ -20,22 +20,33 @@ export default function Register() {
     }
 
     return (
-        <div>
-            <h1>Register</h1>
+        <div className='dark:bg-neutral-600'>
+            <h1 className='dark:text-white text-neutral-600 font-bold'>Register</h1>
             {error && <p className='text-red-500'>{error}</p>}
-            <input 
+            <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder='Email'
-                className='block w-full p-2 mb-2 bg-gray-200 rounded'
+                className='block w-full p-2 mb-4 h-12 bg-gray-200 rounded drop-shadow-md'
             />
-            <button 
-                onClick={handleRegistration}
-                className='bg-blue-700 text-white px-4 py-2 rounded shadow'
-            >
-                Register
-            </button>
+
+            <input
+                type='password'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder='password'
+                className='block w-full p-2 mb-4 h-12 bg-gray-200 rounded drop-shadow-md'
+            />
+
+            <div className='flex flex-col items-center'>
+                <button
+                    onClick={handleRegistration}
+                    className='dark:bg-slate-500 bg-blue-500 text-white px-4 py-2 rounded shadow'
+                >
+                    Register
+                </button>
+            </div>
         </div>
     );
 }

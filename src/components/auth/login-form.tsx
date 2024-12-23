@@ -17,7 +17,7 @@ export default function Login({ onLogin }: LoginProps) {
             onLogin(user.uid);
 
         } catch (err) {
-            if(err instanceof Error) {
+            if (err instanceof Error) {
                 setError(err.message);
             } else {
                 setError('An unexpected error occurred');
@@ -26,29 +26,31 @@ export default function Login({ onLogin }: LoginProps) {
     }
 
     return (
-        <div>
-            <h1>Login</h1>
+        <div className='dark:bg-neutral-600'>
+            <h1 className='dark:text-neutral-200 text-neutral-700 font-bold'>Login</h1>
             {error && <p className='text-red-500'>{error}</p>}
-            <input 
+            <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder='Email'
-                className='block w-full p-2 mb-2 bg-gray-200 rounded'
+                className='block w-full p-2 mb-4 h-12 bg-gray-200 rounded text-black drop-shadow-md'
             />
-            <input 
+            <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder='Password'
-                className='block w-full p-2 mb-2 bg-gray-200 rounded'
+                className='block w-full p-2 mb-4 h-12 bg-gray-200 rounded text-black drop-shadow-md'
             />
-            <button
-                onClick={handleLogin}
-                className='bg-blue-500 text-white px-4 py-2 rounded'
-            >
-                Login
-            </button>
+            <div className='flex flex-col items-center'>
+                <button
+                    onClick={handleLogin}
+                    className='dark:bg-slate-500 bg-blue-500 text-white px-4 py-2 rounded mb-2 shadow'
+                >
+                    Login
+                </button>
+            </div>
         </div>
     )
 }

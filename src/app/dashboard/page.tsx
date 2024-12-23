@@ -70,7 +70,7 @@ export default function Dashboard() {
 
                     <button
                         onClick={() => setIsRegistered(!isRegistered)}
-                        className="mt-4 w-full px-4 py-2 dark:bg-blue-700 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        className="mt-4 w-full px-4 py-2 dark:bg-transparent bg-transparent dark:text-white text-black rounded hover:text-gray-500"
                     >
                         {isRegistered ? "Switch to Register" : "Switch to Login"}
                     </button>
