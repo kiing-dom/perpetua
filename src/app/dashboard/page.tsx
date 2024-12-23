@@ -3,15 +3,23 @@
 import useNotesStore from "../../store/useNotesStore";
 import { useState, useEffect } from 'react';
 import { IoIosAddCircle, IoIosRemoveCircle } from "react-icons/io";
+import Modal from "@/components/ui/modal"
+import Login from "@/components/auth/login-form";
+import Register from "@/components/auth/registration-form";
 
 export default function Dashboard() {
-    const { notes, fetchNotes, addNote, deleteNote } = useNotesStore();
+    const { notes, fetchNotes, addNote, deleteNote, setUid } = useNotesStore();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(true);
+    const [isRegistered, setIsRegistered] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        fetchNotes();
-    }, [fetchNotes]);
+        if (isAuthenticated) {
+            fetchNotes();
+        }
+    }, [fetchNotes, isAuthenticated]);
 
     const handleAddNote = async () => {
         if (!title || !content) {
@@ -29,8 +37,52 @@ export default function Dashboard() {
         await deleteNote(id);
     }
 
+    const handleLogin = async (uid: string) => {
+        setUid(uid);
+        setIsAuthenticated(true);
+        setIsAuthModalOpen(false);
+    }
+
+    const handleRegister = () => {
+        setIsAuthenticated(true);
+        setIsAuthModalOpen(false);
+    }
+
+    const handleCloseModal = () => {
+        if (!isAuthenticated) {
+            setIsAuthModalOpen(true);
+            alert('You need to either log in or register first');
+        }
+    }
+
     return (
         <div className="min-h-screen p-6 my-6">
+
+            <Modal
+                isOpen={isAuthModalOpen}
+                onClose={handleCloseModal}
+                title={isRegistered ? "Login" : "Register"}
+                aria-labelledby="auth-modal-title"
+                aria-describedby="auth-modal-description"
+            >
+
+                {isRegistered ? (
+                    <Login onLogin={handleLogin} />
+                ) : (
+                    <Register onRegister={handleRegister} />
+                )
+                }
+
+                <button
+                    onClick={() => setIsRegistered(!isRegistered)}
+                    className="mt-4 w-full px-4 py-2 dark:bg-transparent bg-transparent dark:text-white text-black rounded hover:text-gray-500"
+                >
+                    {isRegistered ? "Don't Have and Account? Register" : "Already Have an Account? Login"}
+                </button>
+
+            </Modal>
+
+
             <h1 className="text-2xl font-bold mb-4 dark:text-white text-neutral-600">My Notes</h1>
 
             {/* Input Fields */}
@@ -77,7 +129,7 @@ export default function Dashboard() {
                     ))}
                 </div>
 
-                
+
             </div>
         </div>
     )
