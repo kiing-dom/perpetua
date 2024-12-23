@@ -1,15 +1,25 @@
 import { useState } from 'react';
-import { register } from '../../../auth';
+import { register, login } from '../../../auth';
 
-export default function Register() {
+interface RegisterProps {
+    onRegister: (uid: string) => void;
+}
+
+export default function Register({ onRegister }: RegisterProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     const handleRegistration = async () => {
         try {
-            const user = await register(email, password);
-            console.log("User registered: ", user);
+            await register(email, password);
+            
+
+            const user = await login(email, password);
+            onRegister(user.uid);
+            console.log("User registered successfully: ", user.uid);
+
+
         } catch (err) {
             if (err instanceof Error) {
                 setError(err.message);

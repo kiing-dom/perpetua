@@ -16,7 +16,7 @@ export default function Dashboard() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        if(isAuthenticated) {
+        if (isAuthenticated) {
             fetchNotes();
         }
     }, [fetchNotes, isAuthenticated]);
@@ -43,8 +43,13 @@ export default function Dashboard() {
         setIsAuthModalOpen(false);
     }
 
+    const handleRegister = () => {
+        setIsAuthenticated(true);
+        setIsAuthModalOpen(false);
+    }
+
     const handleCloseModal = () => {
-        if(!isAuthenticated) {
+        if (!isAuthenticated) {
             setIsAuthModalOpen(true);
             alert('You need to either log in or register first');
         }
@@ -60,20 +65,20 @@ export default function Dashboard() {
                 aria-labelledby="auth-modal-title"
                 aria-describedby="auth-modal-description"
             >
-                
-                    {isRegistered ? (
-                        <Login onLogin={handleLogin} />
-                    ) : (
-                        <Register />
-                    )
-                    }
 
-                    <button
-                        onClick={() => setIsRegistered(!isRegistered)}
-                        className="mt-4 w-full px-4 py-2 dark:bg-transparent bg-transparent dark:text-white text-black rounded hover:text-gray-500"
-                    >
-                        {isRegistered ? "Don't Have and Account? Register" : "Already Have an Account? Login"}
-                    </button>
+                {isRegistered ? (
+                    <Login onLogin={handleLogin} />
+                ) : (
+                    <Register onRegister={handleRegister} />
+                )
+                }
+
+                <button
+                    onClick={() => setIsRegistered(!isRegistered)}
+                    className="mt-4 w-full px-4 py-2 dark:bg-transparent bg-transparent dark:text-white text-black rounded hover:text-gray-500"
+                >
+                    {isRegistered ? "Don't Have and Account? Register" : "Already Have an Account? Login"}
+                </button>
 
             </Modal>
 
