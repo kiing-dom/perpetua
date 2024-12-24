@@ -3,25 +3,35 @@
 import useNotesStore from "../../store/useNotesStore";
 import useAuthStore from "../../store/useAuthStore";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { IoIosAddCircle, IoIosRemoveCircle } from "react-icons/io";
 import Modal from "@/components/ui/modal"
 import Login from "@/components/auth/login-form";
 import Register from "@/components/auth/registration-form";
 
 export default function Dashboard() {
-    const { notes, fetchNotes, addNote, deleteNote } = useNotesStore();
-    const { uid, setUid } = useAuthStore();
+    const { notes, fetchNotes: rawFetchNotes, addNote, deleteNote } = useNotesStore();
+    const { uid, displayName, setUser } = useAuthStore();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(true);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [isRegistered, setIsRegistered] = useState(true);
 
-    useEffect(() => {
-        if (uid) {
-            fetchNotes();
+    const fetchNotes = useCallback(() => {
+        if(uid) {
+            rawFetchNotes();
         }
-    }, [fetchNotes, uid]);
+    }, [rawFetchNotes, uid]);
+
+    useEffect(() => {
+        fetchNotes();
+    }, [fetchNotes]);
+
+    useEffect(() => {
+        if(!uid) {
+            setIsAuthModalOpen(true);
+        }
+    }, []);
 
     const handleAddNote = async () => {
         if (!title || !content) {
@@ -39,8 +49,8 @@ export default function Dashboard() {
         await deleteNote(id);
     }
 
-    const handleLogin = async (uid: string) => {
-        setUid(uid);
+    const handleLogin = async (uid: string, displayName: string | null) => {
+        setUser(uid, displayName);
         setIsAuthModalOpen(false);
     }
 
@@ -83,7 +93,7 @@ export default function Dashboard() {
 
             </Modal>
 
-            <h1 className=""></h1>
+            <h1 className="text-3xl font-bold mb-4 dark:text-white text-neutral-600">Welcome, {displayName}</h1>
             <h2 className="text-2xl font-bold mb-4 dark:text-white text-neutral-600">My Notes</h2>
 
             {/* Input Fields */}
