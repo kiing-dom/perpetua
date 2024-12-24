@@ -1,6 +1,8 @@
 "use client"
 
 import useNotesStore from "../../store/useNotesStore";
+import useAuthStore from "../../store/useAuthStore";
+
 import { useState, useEffect } from 'react';
 import { IoIosAddCircle, IoIosRemoveCircle } from "react-icons/io";
 import Modal from "@/components/ui/modal"
@@ -8,18 +10,18 @@ import Login from "@/components/auth/login-form";
 import Register from "@/components/auth/registration-form";
 
 export default function Dashboard() {
-    const { notes, fetchNotes, addNote, deleteNote, setUid } = useNotesStore();
+    const { notes, fetchNotes, addNote, deleteNote } = useNotesStore();
+    const { uid, setUid } = useAuthStore();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(true);
     const [isRegistered, setIsRegistered] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        if (isAuthenticated) {
+        if (uid) {
             fetchNotes();
         }
-    }, [fetchNotes, isAuthenticated]);
+    }, [fetchNotes, uid]);
 
     const handleAddNote = async () => {
         if (!title || !content) {
@@ -39,17 +41,16 @@ export default function Dashboard() {
 
     const handleLogin = async (uid: string) => {
         setUid(uid);
-        setIsAuthenticated(true);
         setIsAuthModalOpen(false);
     }
 
     const handleRegister = () => {
-        setIsAuthenticated(true);
+        setIsRegistered(true);
         setIsAuthModalOpen(false);
     }
 
     const handleCloseModal = () => {
-        if (!isAuthenticated) {
+        if (!uid) {
             setIsAuthModalOpen(true);
             alert('You need to either log in or register first');
         }
@@ -82,8 +83,8 @@ export default function Dashboard() {
 
             </Modal>
 
-
-            <h1 className="text-2xl font-bold mb-4 dark:text-white text-neutral-600">My Notes</h1>
+            <h1 className=""></h1>
+            <h2 className="text-2xl font-bold mb-4 dark:text-white text-neutral-600">My Notes</h2>
 
             {/* Input Fields */}
             <div className="mb-4">
