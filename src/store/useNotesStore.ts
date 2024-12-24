@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { db } from "../../firebaseConfig";
 import { collection, addDoc, getDocs, doc, deleteDoc } from "firebase/firestore";
+import useAuthStore from './useAuthStore';
 
 type Note = {
     id: string;
@@ -10,8 +11,6 @@ type Note = {
 
 type NotesStore = {
     notes: Note[];
-    uid: string | null;
-    setUid: (uid: string) => void;
     fetchNotes: () => Promise<void>;
     addNote: (note: Omit<Note, "id">) => Promise<void>;
     deleteNote: (id: string) => Promise<void>;
@@ -19,12 +18,10 @@ type NotesStore = {
 
 const useNotesStore = create<NotesStore>((set, get) => ({
     notes: [],
-    uid: null,
-
-    setUid: (uid) => set({ uid }),
+    
 
     fetchNotes: async () => {
-        const { uid } = get();
+        const { uid } = useAuthStore.getState();
         if (!uid) return;
         
         const notesCollection = collection(db, "users", uid, "notes")
@@ -38,7 +35,7 @@ const useNotesStore = create<NotesStore>((set, get) => ({
     },
 
     addNote: async (note) => {
-        const { uid } = get();
+        const { uid } = useAuthStore.getState();
         if (!uid) return;
         
         const notesCollection = collection(db, "users", uid, "notes");
@@ -49,7 +46,7 @@ const useNotesStore = create<NotesStore>((set, get) => ({
     },
 
     deleteNote: async (id) => {
-        const { uid } = get();
+        const { uid } = useAuthStore.getState();
         if (!uid) return;
 
         const noteDoc = doc(db, "users", uid, "notes", id);
