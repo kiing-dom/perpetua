@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { login } from '../../../auth';
 
 interface LoginProps {
-    onLogin: (uid: string) => void;
+    onLogin: (uid: string, displayName: string | null) => void;
 }
 
 export default function Login({ onLogin }: LoginProps) {
@@ -14,7 +14,7 @@ export default function Login({ onLogin }: LoginProps) {
         try {
             const user = await login(email, password);
             console.log("User logged in: ", user);
-            onLogin(user.uid);
+            onLogin(user.uid, user.displayName);
 
         } catch (err) {
             if (err instanceof Error) {
