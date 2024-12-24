@@ -9,6 +9,7 @@ export default function Register({ onRegister }: RegisterProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [displayName, setDisplayName] = useState('');
 
     const handleRegistration = async () => {
         try {
@@ -33,6 +34,15 @@ export default function Register({ onRegister }: RegisterProps) {
         <div className='dark:bg-neutral-600'>
             <h1 className='dark:text-white text-neutral-600 font-bold'>Register</h1>
             {error && <p className='text-red-500'>{error}</p>}
+
+            <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder='Display Name'
+                className='text-black block w-full p-2 mb-4 h-12 bg-gray-200 rounded drop-shadow-md'
+            />
+
             <input
                 type="email"
                 value={email}
