@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { register, login } from '../../../auth';
+import { updateProfile, User } from 'firebase/auth';
 
 interface RegisterProps {
     onRegister: (uid: string) => void;
@@ -11,12 +12,22 @@ export default function Register({ onRegister }: RegisterProps) {
     const [error, setError] = useState('');
     const [displayName, setDisplayName] = useState('');
 
+    const handleDisplayNameInput = async (user: User, displayName: string) => {
+        try {
+            await updateProfile(user, { displayName });
+            console.log("Display name successfully updated to: ", displayName);
+        } catch (err) {
+            console.error("Error updating display name", err);
+            throw err;
+        }
+    }
+
     const handleRegistration = async () => {
         try {
             await register(email, password);
-            
-
             const user = await login(email, password);
+            
+            await handleDisplayNameInput(user, displayName);
             onRegister(user.uid);
             console.log("User registered successfully: ", user.uid);
 
