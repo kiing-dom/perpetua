@@ -45,7 +45,7 @@ export default function Register({ onRegister }: RegisterProps) {
                 type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder='password'
+                placeholder='Password'
                 className='text-black block w-full p-2 mb-4 h-12 bg-gray-200 rounded drop-shadow-md'
             />
 
