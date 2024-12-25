@@ -1,37 +1,21 @@
-"use client"
+"use client";
 
 import useNotesStore from "../../store/useNotesStore";
-import useAuthStore from "../../store/useAuthStore";
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 import { IoIosAddCircle, IoIosRemoveCircle } from "react-icons/io";
-import Modal from "@/components/ui/modal"
-import Login from "@/components/auth/login-form";
-import Register from "@/components/auth/registration-form";
 
 export default function Dashboard() {
     const { notes, fetchNotes: rawFetchNotes, addNote, deleteNote } = useNotesStore();
-    const { uid, displayName, setUser } = useAuthStore();
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-    const [isRegistered, setIsRegistered] = useState(true);
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
 
     const fetchNotes = useCallback(() => {
-        if(uid) {
-            rawFetchNotes();
-        }
-    }, [rawFetchNotes, uid]);
+        rawFetchNotes();
+    }, [rawFetchNotes]);
 
     useEffect(() => {
         fetchNotes();
     }, [fetchNotes]);
-
-    useEffect(() => {
-        if(!uid) {
-            setIsAuthModalOpen(true);
-        }
-    }, [uid]);
 
     const handleAddNote = async () => {
         if (!title || !content) {
@@ -41,59 +25,16 @@ export default function Dashboard() {
 
         await addNote({ title, content });
 
-        setTitle('');
-        setContent('');
+        setTitle("");
+        setContent("");
     };
 
     const handleDeleteNote = async (id: string) => {
         await deleteNote(id);
-    }
-
-    const handleLogin = async (uid: string, displayName: string | null) => {
-        setUser(uid, displayName);
-        setIsAuthModalOpen(false);
-    }
-
-    const handleRegister = () => {
-        setIsRegistered(true);
-        setIsAuthModalOpen(false);
-    }
-
-    const handleCloseModal = () => {
-        setIsAuthModalOpen(false);
-        if(!uid) {
-            alert('Note: You Need To Log In or Register to use the application');
-        }
-    }
+    };
 
     return (
         <div className="min-h-screen p-6 my-6">
-
-            <Modal
-                isOpen={isAuthModalOpen}
-                onClose={handleCloseModal}
-                title={isRegistered ? "Login" : "Register"}
-                aria-labelledby="auth-modal-title"
-                aria-describedby="auth-modal-description"
-            >
-
-                {isRegistered ? (
-                    <Login onLogin={handleLogin} />
-                ) : (
-                    <Register onRegister={handleRegister} />
-                )
-                }
-
-                <button
-                    onClick={() => setIsRegistered(!isRegistered)}
-                    className="mt-4 w-full px-4 py-2 dark:bg-transparent bg-transparent dark:text-white text-black rounded hover:text-gray-500"
-                >
-                    {isRegistered ? "Don't Have and Account? Register" : "Already Have an Account? Login"}
-                </button>
-
-            </Modal>
-
-            <h1 className="text-3xl font-bold mb-4 dark:text-white text-neutral-600"> Welcome back, {displayName}</h1>
             <h2 className="text-2xl font-bold mb-4 dark:text-white text-neutral-600">My Notes</h2>
 
             {/* Input Fields */}
@@ -139,9 +80,7 @@ export default function Dashboard() {
                         </div>
                     ))}
                 </div>
-
-
             </div>
         </div>
-    )
+    );
 }
