@@ -48,7 +48,7 @@ export default function Navbar() {
             <div className="flex justify-between items-center">
                 <Link href="/" passHref legacyBehavior>
                     <a className="legacyBehavior pr-4">
-                        <img src="/custom/PERPETUA.png" alt="perpetua" className="dark:white-image w-[200px]" />
+                        <img src="/custom/PERPETUA.png" alt="perpetua" className="dark:white-image w-[124px]" />
                     </a>
                 </Link>
                 <div className="hidden md:flex items-center gap-4">
