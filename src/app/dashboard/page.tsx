@@ -31,7 +31,7 @@ export default function Dashboard() {
         if(!uid) {
             setIsAuthModalOpen(true);
         }
-    }, []);
+    }, [uid]);
 
     const handleAddNote = async () => {
         if (!title || !content) {
