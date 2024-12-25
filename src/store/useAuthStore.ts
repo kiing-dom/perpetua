@@ -1,13 +1,13 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { auth } from "../../auth";
-import { signOut as firebaseSignOut } from 'firebase/auth';
+import { signOut as firebaseSignOut } from "firebase/auth";
 
 type AuthStore = {
     uid: string | null;
     displayName: string | null;
     setUser: (uid: string, displayName: string | null) => void;
-    signOut: () => void;
+    signOut: () => Promise<void>;
     clearUid: () => void;
 };
 
@@ -17,20 +17,18 @@ const useAuthStore = create<AuthStore>()(
             uid: null,
             displayName: null,
             setUser: (uid, displayName) => set({ uid, displayName }),
-            signOut: () => {
-                firebaseSignOut(auth)
-                    .then(() => {
-                        set({ uid: null, displayName: null });
-                    })
-                    .catch((error) => {
-                        console.error('Error signing out: ', error);
-                        throw error;
-                    });
+            signOut: async () => {
+                try {
+                    await firebaseSignOut(auth);
+                    set({ uid: null, displayName: null });
+                } catch (error) {
+                    console.error("Error signing out: ", error);
+                }
             },
-            clearUid: () => set({ uid: null })
+            clearUid: () => set({ uid: null }),
         }),
         {
-            name: 'auth-storage',
+            name: "auth-storage",
         }
     )
 );
