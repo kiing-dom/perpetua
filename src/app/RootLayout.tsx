@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import useAuthStore from '../store/useAuthStore';
 
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../auth';
+import { auth } from '../../firebaseConfig';
 
 const geistSans = Geist({
     variable: "--font-geist-sans",

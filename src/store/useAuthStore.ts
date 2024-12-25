@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { auth } from "../../auth";
+import { auth } from "../../firebaseConfig";
 import { signOut as firebaseSignOut } from "firebase/auth";
 
 type AuthStore = {
