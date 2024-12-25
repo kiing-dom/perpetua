@@ -93,7 +93,7 @@ export default function Dashboard() {
 
             </Modal>
 
-            <h1 className="text-3xl font-bold mb-4 dark:text-white text-neutral-600">Welcome, {displayName}</h1>
+            <h1 className="text-3xl font-bold mb-4 dark:text-white text-neutral-600"> Welcome back, {displayName}</h1>
             <h2 className="text-2xl font-bold mb-4 dark:text-white text-neutral-600">My Notes</h2>
 
             {/* Input Fields */}
