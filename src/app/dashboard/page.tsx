@@ -60,9 +60,9 @@ export default function Dashboard() {
     }
 
     const handleCloseModal = () => {
-        if (!uid) {
-            setIsAuthModalOpen(true);
-            alert('You need to either log in or register first');
+        setIsAuthModalOpen(false);
+        if(!uid) {
+            alert('Note: You Need To Log In or Register to use the application');
         }
     }
 
