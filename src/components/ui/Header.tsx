@@ -59,7 +59,7 @@ export default function Navbar() {
                     </Link>
                     {uid ? (
                         <>
-                            <span className="text-neutral-700 font-bold dark:text-white">
+                            <span className="text-blue-600 font-bold dark:text-green-500">
                                 Welcome, {displayName}
                             </span>
                             <button
