@@ -6,6 +6,7 @@ import Modal from "@/components/ui/modal";
 import Login from "@/components/auth/login-form";
 import useAuthStore from "../../store/useAuthStore";
 import useNotesStore from "../../store/useNotesStore";
+import TextEditor from '@/components/notes/editor';
 
 export default function Dashboard() {
     const { notes, fetchNotes: rawFetchNotes, addNote, deleteNote } = useNotesStore();
@@ -69,11 +70,8 @@ export default function Dashboard() {
                             placeholder="Enter Note Title..."
                             className="block w-full p-2 mb-2 dark:bg-neutral-700 bg-neutral-200 dark:text-white text-black rounded shadow"
                         />
-                        <textarea
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="Enter Note Content..."
-                            className="block w-full p-2 dark:bg-neutral-700 bg-neutral-200 dark:text-white text-black rounded"
+                        <TextEditor
+            
                         />
                     </div>
                     <div className="flex flex-col items-center">
