@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { register, login } from '../../../auth';
+import { updateProfile, User } from 'firebase/auth';
 
 interface RegisterProps {
     onRegister: (uid: string) => void;
@@ -9,13 +10,24 @@ export default function Register({ onRegister }: RegisterProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [displayName, setDisplayName] = useState('');
+
+    const handleDisplayNameInput = async (user: User, displayName: string) => {
+        try {
+            await updateProfile(user, { displayName });
+            console.log("Display name successfully updated to: ", displayName);
+        } catch (err) {
+            console.error("Error updating display name", err);
+            throw err;
+        }
+    }
 
     const handleRegistration = async () => {
         try {
             await register(email, password);
-            
-
             const user = await login(email, password);
+            
+            await handleDisplayNameInput(user, displayName);
             onRegister(user.uid);
             console.log("User registered successfully: ", user.uid);
 
@@ -33,6 +45,15 @@ export default function Register({ onRegister }: RegisterProps) {
         <div className='dark:bg-neutral-600'>
             <h1 className='dark:text-white text-neutral-600 font-bold'>Register</h1>
             {error && <p className='text-red-500'>{error}</p>}
+
+            <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder='Display Name'
+                className='text-black block w-full p-2 mb-4 h-12 bg-gray-200 rounded drop-shadow-md'
+            />
+
             <input
                 type="email"
                 value={email}
@@ -45,7 +66,7 @@ export default function Register({ onRegister }: RegisterProps) {
                 type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder='password'
+                placeholder='Password'
                 className='text-black block w-full p-2 mb-4 h-12 bg-gray-200 rounded drop-shadow-md'
             />
 
