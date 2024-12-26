@@ -11,25 +11,25 @@ const MenuBar = ({ editor }: { editor: any }) => {
     <div className="border-b p-2 flex gap-2 bg-neutral-700">
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
-        className={`px-3 py-1 rounded hover:bg-gray-100 ${editor.isActive('bold') ? 'bg-gray-200' : ''}`}
+        className={`px-3 py-1 rounded hover:bg-gray-500 ${editor.isActive('bold') ? 'bg-gray-400' : ''}`}
       >
         B
       </button>
       <button
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={`px-3 py-1 rounded hover:bg-gray-100 ${editor.isActive('italic') ? 'bg-gray-200' : ''}`}
+        className={`px-3 py-1 rounded hover:bg-gray-500 ${editor.isActive('italic') ? 'bg-gray-400' : ''}`}
       >
         I
       </button>
       <button
         onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={`px-3 py-1 rounded hover:bg-gray-100 ${editor.isActive('bulletList') ? 'bg-gray-200' : ''}`}
+        className={`px-3 py-1 rounded hover:bg-gray-500 ${editor.isActive('bulletList') ? 'bg-gray-400' : ''}`}
       >
         • List
       </button>
       <button
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={`px-3 py-1 rounded hover:bg-gray-100 ${editor.isActive('orderedList') ? 'bg-gray-200' : ''}`}
+        className={`px-3 py-1 rounded hover:bg-gray-500 ${editor.isActive('orderedList') ? 'bg-gray-400' : ''}`}
       >
         1. List
       </button>
