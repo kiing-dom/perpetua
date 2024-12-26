@@ -1,38 +1,130 @@
 import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { 
+  Bold, 
+  Italic, 
+  Code,
+  Heading1,
+  Heading2,
+  List,
+  ListOrdered,
+  Quote,
+  Minus
+} from 'lucide-react';
 
 const MenuBar = ({ editor }: { editor: any }) => {
   if (!editor) {
     return null;
   }
 
+  const MenuButton = ({ 
+    onClick, 
+    isActive = false,
+    children,
+    tooltip
+  }: { 
+    onClick: () => void,
+    isActive?: boolean,
+    children: React.ReactNode,
+    tooltip: string
+  }) => (
+    <button
+      onClick={onClick}
+      className={`p-2 rounded hover:bg-neutral-600 transition-colors duration-200
+        ${isActive ? 'bg-neutral-600 text-white' : 'text-neutral-200'}`}
+      title={tooltip}
+    >
+      {children}
+    </button>
+  );
+
   return (
-    <div className="border-b p-2 flex gap-2 bg-neutral-700">
-      <button
+    <div className="border-b border-neutral-600 p-1 flex flex-wrap gap-1 bg-neutral-700 sticky top-0">
+      <div className="flex items-center gap-1 px-1">
+        <select
+          onChange={e => {
+            const level = parseInt(e.target.value);
+            level === 0 
+              ? editor.chain().focus().setParagraph().run()
+              : editor.chain().focus().toggleHeading({ level }).run();
+          }}
+          value={
+            editor.isActive('heading', { level: 1 }) 
+              ? '1' 
+              : editor.isActive('heading', { level: 2 }) 
+                ? '2' 
+                : editor.isActive('heading', { level: 3 }) 
+                  ? '3' 
+                  : '0'
+          }
+          className="bg-neutral-700 text-neutral-200 border border-neutral-600 rounded px-2 py-1 focus:outline-none hover:bg-neutral-600"
+        >
+          <option value="0">Normal</option>
+          <option value="1">Heading 1</option>
+          <option value="2">Heading 2</option>
+          <option value="3">Heading 3</option>
+        </select>
+      </div>
+
+      <div className="w-px h-6 bg-neutral-600 my-auto mx-1" />
+
+      <MenuButton
         onClick={() => editor.chain().focus().toggleBold().run()}
-        className={`px-3 py-1 rounded hover:bg-gray-500 ${editor.isActive('bold') ? 'bg-gray-400' : ''}`}
+        isActive={editor.isActive('bold')}
+        tooltip="Bold"
       >
-        B
-      </button>
-      <button
+        <Bold size={16} />
+      </MenuButton>
+
+      <MenuButton
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={`px-3 py-1 rounded hover:bg-gray-500 ${editor.isActive('italic') ? 'bg-gray-400' : ''}`}
+        isActive={editor.isActive('italic')}
+        tooltip="Italic"
       >
-        I
-      </button>
-      <button
+        <Italic size={16} />
+      </MenuButton>
+
+      <MenuButton
+        onClick={() => editor.chain().focus().toggleCode().run()}
+        isActive={editor.isActive('code')}
+        tooltip="Inline Code"
+      >
+        <Code size={16} />
+      </MenuButton>
+
+      <div className="w-px h-6 bg-neutral-600 my-auto mx-1" />
+
+      <MenuButton
         onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={`px-3 py-1 rounded hover:bg-gray-500 ${editor.isActive('bulletList') ? 'bg-gray-400' : ''}`}
+        isActive={editor.isActive('bulletList')}
+        tooltip="Bullet List"
       >
-        • List
-      </button>
-      <button
+        <List size={16} />
+      </MenuButton>
+
+      <MenuButton
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={`px-3 py-1 rounded hover:bg-gray-500 ${editor.isActive('orderedList') ? 'bg-gray-400' : ''}`}
+        isActive={editor.isActive('orderedList')}
+        tooltip="Numbered List"
       >
-        1. List
-      </button>
+        <ListOrdered size={16} />
+      </MenuButton>
+
+      <MenuButton
+        onClick={() => editor.chain().focus().toggleBlockquote().run()}
+        isActive={editor.isActive('blockquote')}
+        tooltip="Quote"
+      >
+        <Quote size={16} />
+      </MenuButton>
+
+      <MenuButton
+        onClick={() => editor.chain().focus().setHorizontalRule().run()}
+        tooltip="Horizontal Rule"
+      >
+        <Minus size={16} />
+      </MenuButton>
     </div>
   );
 };
@@ -43,7 +135,7 @@ interface TextEditorProps {
 }
 
 const TextEditor: React.FC<TextEditorProps> = ({ 
-  defaultValue = '<p>Start writing...</p>',
+  defaultValue = '<p>Type "/" for commands...</p>',
   onChange 
 }) => {
   const editor = useEditor({
@@ -54,15 +146,19 @@ const TextEditor: React.FC<TextEditorProps> = ({
     onUpdate: ({ editor }) => {
       onChange?.(editor.getHTML());
     },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-invert max-w-none focus:outline-none'
+      },
+    },
   });
 
   return (
-    <div className="border rounded-lg overflow-hidden bg-neutral-500 bg-opacity-60">
+    <div className="border border-neutral-600 rounded-lg overflow-hidden bg-neutral-800 text-neutral-200">
       <MenuBar editor={editor} />
-      <EditorContent 
-        editor={editor} 
-        className="prose max-w-none p-4 min-h-[200px] focus:outline-none"
-      />
+      <div className="p-4">
+        <EditorContent editor={editor} />
+      </div>
     </div>
   );
 };
