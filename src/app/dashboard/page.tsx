@@ -48,7 +48,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="min-h-screen p-6 my-6">
+        <div className="min-h-screen p-6 my-24">
             {!uid ? (
                 <Modal
                     isOpen={isAuthModalOpen}
