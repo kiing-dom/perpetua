@@ -70,7 +70,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="flex h-screen bg-[#F8F8FF] dark:bg-neutral-">
+        <div className="flex h-screen bg-[#F8F8FF] dark:bg-neutral-900">
             {!uid ? (
                 <Modal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} title="Login">
                     <Login onLogin={handleLogin} />
@@ -78,7 +78,7 @@ export default function Dashboard() {
             ) : (
                 <>
                     {/* Sidebar */}
-                    <div className="w-64 border-r border-neutral-800 p-4 flex flex-col">
+                    <div className="w-64 border-r border-neutral-800 dark:bg-neutral-900 p-4 flex flex-col">
                         <div className="flex items-center justify-between mb-4">
                             <h1 className="text-xl font-bold text-neutral-600 dark:text-neutral-200">Notes</h1>
                             <button
@@ -129,7 +129,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Main Content */}
-                    <div className="flex-1 overflow-hidden my-16">
+                    <div className="flex-1 overflow-hidden my-16 dark:bg-neutral-900">
                         {activeNote ? (
                             <div className="h-full flex flex-col">
                                 <div className="p-4">
