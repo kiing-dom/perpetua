@@ -70,7 +70,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="flex h-screen bg-[#F8F8FF] dark:bg-neutral-900">
+        <div className="flex h-screen bg-[#F8F8FF] dark:bg-neutral-">
             {!uid ? (
                 <Modal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} title="Login">
                     <Login onLogin={handleLogin} />
@@ -129,7 +129,7 @@ export default function Dashboard() {
                     </div>
 
                     {/* Main Content */}
-                    <div className="flex-1 overflow-hidden">
+                    <div className="flex-1 overflow-hidden my-16">
                         {activeNote ? (
                             <div className="h-full flex flex-col">
                                 <div className="p-4">
