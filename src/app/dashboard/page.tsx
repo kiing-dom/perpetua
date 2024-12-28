@@ -80,7 +80,7 @@ export default function Dashboard() {
                     {/* Sidebar */}
                     <div className="w-64 border-r border-neutral-800 p-4 flex flex-col">
                         <div className="flex items-center justify-between mb-4">
-                            <h1 className="text-xl font-bold text-neutral-200">Notes</h1>
+                            <h1 className="text-xl font-bold text-neutral-600 dark:text-neutral-200">Notes</h1>
                             <button
                                 onClick={handleAddNote}
                                 className="p-1 hover:bg-neutral-800 rounded"
@@ -138,7 +138,7 @@ export default function Dashboard() {
                                         value={activeNote.title}
                                         onChange={(e) => handleUpdateNoteTitle(e.target.value)}
                                         placeholder="Untitled"
-                                        className="text-2xl font-bold bg-transparent text-neutral-200 w-full focus:outline-none"
+                                        className="text-2xl font-bold bg-transparent text-neutral-600 dark:text-neutral-200 w-full focus:outline-none"
                                     />
                                 </div>
                                 <div className="flex-1 overflow-y-auto px-4 pb-4">
