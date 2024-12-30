@@ -111,7 +111,7 @@ export default function Dashboard() {
                             />
                         </div>
 
-                        <div className="flex-1 overflow-y-auto">
+                        <div className="flex-1 overflow-y-auto hover:text-white">
                             {filteredNotes.map((note: Note) => (
                                 <div
                                     key={note.id}
@@ -121,7 +121,7 @@ export default function Dashboard() {
                                     }`}
                                 >
                                     <div className="truncate">
-                                        <h3 className="text-neutral-200 text-sm font-medium truncate">
+                                        <h3 className="text-neutral-700 group-hover:text-white text-sm font-medium truncate">
                                             {note.title || "Untitled"}
                                         </h3>
                                     </div>
