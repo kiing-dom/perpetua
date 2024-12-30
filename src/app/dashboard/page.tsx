@@ -154,7 +154,7 @@ export default function Dashboard() {
                                 </div>
                                 <div className="flex-1 overflow-y-auto px-4 pb-4">
                                     <TextEditor
-                                        defaultValue={activeNote.content}
+                                        defaultValue={activeNote?.content}
                                         onChange={handleUpdateNoteContent}
                                     />
                                 </div>
