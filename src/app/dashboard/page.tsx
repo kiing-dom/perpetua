@@ -121,7 +121,7 @@ export default function Dashboard() {
                                     }`}
                                 >
                                     <div className="truncate">
-                                        <h3 className="text-neutral-700 group-hover:text-white text-sm font-medium truncate">
+                                        <h3 className="dark:text-neutral-300 text-neutral-700 group-hover:text-white text-sm font-medium truncate">
                                             {note.title || "Untitled"}
                                         </h3>
                                     </div>
