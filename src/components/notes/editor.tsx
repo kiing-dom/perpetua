@@ -142,7 +142,17 @@ const TextEditor: React.FC<TextEditorProps> = ({
         }
       }),
       Placeholder.configure({
-        placeholder: 'Type / for commands...',
+        placeholder: ({ node }) => {
+          if (node.type.name === "heading") {
+            return "Heading"
+          }
+          return "Type '/' for commands..."
+        },
+
+        showOnlyCurrent: false,
+        showOnlyWhenEditable: true,
+        includeChildren: true
+        
       }),
       Markdown.configure({
         html: false,
