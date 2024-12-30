@@ -32,8 +32,8 @@ export default function Dashboard() {
 
     const handleAddNote = async (): Promise<void> => {
         const newNote = await addNote({ 
-            title: "Untitled", 
-            content: '<p>Type "/" for commands...</p>' 
+            title: "", 
+            content: "" 
         });
         if (newNote?.id) {
             setActiveNoteId(newNote.id);
