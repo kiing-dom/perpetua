@@ -15,7 +15,7 @@ interface Note {
 }
 
 export default function Dashboard() {
-    const { notes, fetchNotes: rawFetchNotes, addNote, deleteNote } = useNotesStore();
+    const { notes, fetchNotes: rawFetchNotes, addNote, deleteNote, updateNote } = useNotesStore();
     const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
     const [localTitle, setLocalTitle] = useState<string>("");
     const [searchQuery, setSearchQuery] = useState<string>("");
