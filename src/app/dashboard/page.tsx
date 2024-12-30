@@ -17,6 +17,7 @@ interface Note {
 export default function Dashboard() {
     const { notes, fetchNotes: rawFetchNotes, addNote, deleteNote } = useNotesStore();
     const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
+    const [localTitle, setLocalTitle] = useState<string>("");
     const [searchQuery, setSearchQuery] = useState<string>("");
     const fetchNotes = useCallback(() => rawFetchNotes(), [rawFetchNotes]);
     const { uid, setUser } = useAuthStore();
@@ -29,6 +30,13 @@ export default function Dashboard() {
             fetchNotes();
         }
     }, [uid, fetchNotes]);
+
+    useEffect(() => {
+        const active = notes.find(note => note.id == activeNoteId);
+        if (active) {
+            setLocalTitle(active.title);
+        }
+    }, [activeNoteId, notes]);
 
     const handleAddNote = async (): Promise<void> => {
         const newNote = await addNote({ 
@@ -60,7 +68,7 @@ export default function Dashboard() {
     const activeNote = notes.find((note: Note) => note.id === activeNoteId);
 
     const handleUpdateNoteTitle = (title: string): void => {
-        // Add your note title update logic here
+        setLocalTitle(title);
         console.log('Updating note title:', title);
     };
 
@@ -135,7 +143,7 @@ export default function Dashboard() {
                                 <div className="p-4">
                                     <input
                                         type="text"
-                                        value={activeNote.title}
+                                        value={localTitle}
                                         onChange={(e) => handleUpdateNoteTitle(e.target.value)}
                                         placeholder="Untitled"
                                         className="text-2xl font-bold bg-transparent text-neutral-600 dark:text-neutral-200 w-full focus:outline-none"
