@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { db } from "../../firebaseConfig";
-import { collection, addDoc, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import useAuthStore from "./useAuthStore";
 
 type Note = {
@@ -14,6 +14,7 @@ type NotesStore = {
     fetchNotes: () => Promise<void>;
     addNote: (note: Omit<Note, "id">) => Promise<Note | void>;
     deleteNote: (id: string) => Promise<void>;
+    updateNote: (id: string, updates: Partial<Omit<Note, "id">>) => Promise<void>;
 };
 
 const useNotesStore = create<NotesStore>((set, get) => ({
@@ -63,6 +64,20 @@ const useNotesStore = create<NotesStore>((set, get) => ({
         set((state) => ({
             notes: state.notes.filter((note) => note.id !== id),
         }));
+    },
+
+    updateNote: async (id, updates) => {
+        const { uid } = useAuthStore.getState();
+        if(!uid) return;
+
+        const noteDoc = doc(db, "users", uid, "notes", id);
+        await updateDoc(noteDoc, updates);
+
+        set((state) => ({
+            notes: state.notes.map((note) => 
+                note.id === id ? { ...note, ...updates} : note
+            ),
+        }))
     },
 }));
 
