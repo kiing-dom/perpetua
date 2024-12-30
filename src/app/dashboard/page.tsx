@@ -69,12 +69,15 @@ export default function Dashboard() {
 
     const handleUpdateNoteTitle = (title: string): void => {
         setLocalTitle(title);
-        console.log('Updating note title:', title);
+        if(activeNoteId) {
+            updateNote(activeNoteId, { title });
+        }
     };
 
     const handleUpdateNoteContent = (content: string): void => {
-        // Add your note content update logic here
-        console.log('Updating note content:', content);
+        if(activeNoteId) {
+            updateNote(activeNoteId, { content});
+        }
     };
 
     return (
