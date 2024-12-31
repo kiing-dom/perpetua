@@ -161,7 +161,8 @@ const TextEditor: React.FC<TextEditorProps> = ({
     ],
     content: defaultValue,
     onUpdate: ({ editor }) => {
-      onChange?.(editor.getHTML());
+      const markdown = editor.storage.markdown.getMarkdown();
+      onChange?.(markdown);
     },
     editorProps: {
       attributes: {
