@@ -196,7 +196,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
           }
         }
 
-        return true;
+        return false;
       },
     },
   });
