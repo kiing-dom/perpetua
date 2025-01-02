@@ -94,9 +94,9 @@ export default function Dashboard() {
                             <h1 className="text-xl font-bold text-neutral-600 dark:text-neutral-200">Notes</h1>
                             <button
                                 onClick={handleAddNote}
-                                className="p-1 hover:bg-neutral-800 rounded"
+                                className="group p-1 hover:bg-neutral-800 dark:hover:bg-neutral-400 rounded"
                             >
-                                <Plus className="text-neutral-400" size={20} />
+                                <Plus className="text-neutral-400 dark:group-hover:text-white transition-transform" size={20} />
                             </button>
                         </div>
                         
