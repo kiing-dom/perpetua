@@ -121,8 +121,8 @@ export default function Dashboard() {
                                     }`}
                                 >
                                     <div className="truncate">
-                                        <h3 className={`dark:text-neutral-300 text-neutral-400 group-hover:text-white text-sm font-medium truncate ${
-                                            activeNoteId === note.id ? 'text-white' : 'text-neutral-500'
+                                        <h3 className={`group-hover:text-white text-sm font-medium truncate ${
+                                            activeNoteId === note.id ? 'text-white dark:text-white' : 'text-neutral-500 dark:text-neutral-300'
                                         }`}>
                                             {note.title || "Untitled"}
                                         </h3>
