@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Plus, Search, Trash2, Save } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import Login from "@/components/auth/login-form";
 import useAuthStore from "../../store/useAuthStore";
@@ -18,6 +18,8 @@ export default function Dashboard() {
     const { notes, fetchNotes: rawFetchNotes, addNote, deleteNote, updateNote } = useNotesStore();
     const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
     const [localTitle, setLocalTitle] = useState<string>("");
+    const [localContent, setLocalContent] = useState<string>("");
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [searchQuery, setSearchQuery] = useState<string>("");
     const fetchNotes = useCallback(() => rawFetchNotes(), [rawFetchNotes]);
     const { uid, setUser } = useAuthStore();
@@ -35,6 +37,8 @@ export default function Dashboard() {
         const active = notes.find(note => note.id == activeNoteId);
         if (active) {
             setLocalTitle(active.title);
+            setLocalContent(active.content);
+            setHasUnsavedChanges(false);
         }
     }, [activeNoteId, notes]);
 
@@ -69,16 +73,34 @@ export default function Dashboard() {
 
     const handleUpdateNoteTitle = (title: string): void => {
         setLocalTitle(title);
-        if(activeNoteId) {
-            updateNote(activeNoteId, { title });
-        }
+        checkForChanges(title, localContent);
     };
 
     const handleUpdateNoteContent = (content: string): void => {
-        if(activeNoteId) {
-            updateNote(activeNoteId, { content});
-        }
+        setLocalContent(content);
+        setHasUnsavedChanges(true);
+        checkForChanges(localTitle, content);
     };
+
+    const checkForChanges = (currentTitle: string, currentContent: string) => {
+        if (activeNote) {
+            const hasChanged =
+                currentTitle !== activeNote.title ||
+                currentContent !== activeNote.content;
+            setHasUnsavedChanges(hasChanged);
+        }
+    }
+
+    const handleSave = async () => {
+        if(activeNoteId) {
+            await updateNote(activeNoteId, {
+                title: localTitle,
+                content: localContent
+            });
+
+            setHasUnsavedChanges(false);
+        }
+    }
 
     return (
         <div className="flex h-screen bg-[#F8F8FF] dark:bg-neutral-900">
@@ -154,6 +176,19 @@ export default function Dashboard() {
                                         className="text-2xl font-bold bg-transparent text-neutral-600 dark:text-neutral-200 w-full focus:outline-none"
                                     />
                                 </div>
+
+                                <button
+                                    onClick={handleSave}
+                                    disabled={!hasUnsavedChanges}
+                                    className={`w-24 mb-4 flex items-center gap-2 px-3 py-1.5 rounded ${
+                                        hasUnsavedChanges
+                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                        : 'bg-neutral-700 text-neutral cursor-not-allowed'
+                                    }`}
+                                >
+                                    <Save /> Save
+                                </button>
+
                                 <div className="flex-1 overflow-y-auto px-4 pb-4">
                                     <TextEditor
                                         defaultValue={activeNote?.content}
