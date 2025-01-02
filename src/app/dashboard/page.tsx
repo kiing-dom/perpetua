@@ -117,11 +117,13 @@ export default function Dashboard() {
                                     key={note.id}
                                     onClick={() => setActiveNoteId(note.id)}
                                     className={`group p-2 rounded-md mb-1 cursor-pointer flex items-center justify-between ${
-                                        activeNoteId === note.id ? 'bg-neutral-800' : 'hover:bg-neutral-800'
+                                        activeNoteId === note.id ? 'bg-neutral-800 dark:bg-neutral-600' : 'hover:bg-neutral-800'
                                     }`}
                                 >
                                     <div className="truncate">
-                                        <h3 className="dark:text-neutral-300 text-neutral-700 group-hover:text-white text-sm font-medium truncate">
+                                        <h3 className={`dark:text-neutral-300 text-neutral-400 group-hover:text-white text-sm font-medium truncate ${
+                                            activeNoteId === note.id ? 'text-white' : 'text-neutral-500'
+                                        }`}>
                                             {note.title || "Untitled"}
                                         </h3>
                                     </div>
