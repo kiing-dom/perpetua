@@ -6,8 +6,12 @@ import { Markdown } from 'tiptap-markdown';
 import {
   Bold, Italic, Code, Heading1, Heading2, List,
   ListOrdered, Quote, Minus, ChevronDown, Plus, Search,
-  Heading3, AlignLeft, AlignCenter, AlignRight
+  Heading3, AlignLeft
 } from 'lucide-react';
+
+import { getEditorClassNames } from './styles/editor-styles';
+import './styles/editor.css';
+import CustomParagraph from './styles/CustomParagraph';
 
 interface CommandProps {
   title: string;
@@ -143,8 +147,10 @@ const TextEditor: React.FC<TextEditorProps> = ({
       StarterKit.configure({
         heading: {
           levels: [1, 2, 3]
-        }
+        },
+        paragraph: false,
       }),
+      CustomParagraph,
       Placeholder.configure({
         placeholder: ({ node }) => {
           if (node.type.name === 'heading') {
@@ -170,8 +176,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none focus:outline-none min-h-[200px] px-4 prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-4 prose-h2:text-2xl prose-h2:font-semibold prose-h2:mb-3 prose-h3:text-xl prose-h3:font-medium prose-h3:mb-2 prose-p:text-base prose-p:mb-2 prose-blockquote:border-l-2 prose-blockquote:border-neutral-500 prose-blockquote:pl-4 prose-blockquote:italic prose-pre:bg-neutral-900 prose-pre:p-4 prose-pre:rounded-lg prose-code:text-sm prose-code:bg-neutral-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-ul:list-disc prose-ul:ml-4 prose-ol:list-decimal prose-ol:ml-4 prose-li:mb-1 prose-hr:border-neutral-600',
-
+        class: getEditorClassNames(),
       },
       handleKeyDown: (view, event) => {
         if (event.key == '/') {
