@@ -205,6 +205,13 @@ const TextEditor: React.FC<TextEditorProps> = ({
           levels: [1, 2, 3]
         },
         paragraph: false,
+        code: false,
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
+        HTMLAttributes: {
+          class: 'rounded bg-neutral p-4 font-mono text-sm'
+        }
       }),
       CustomParagraph,
       Placeholder.configure({
@@ -308,6 +315,23 @@ const TextEditor: React.FC<TextEditorProps> = ({
         >
           <Heading3 size={16} />
         </button>
+        <button
+          onClick={() => editor.chain().focus().toggleCode().run()}
+          className={formatButtonClass(editor.isActive('code'))}
+          title='Inline Code'
+        >
+          <Code size={16} />
+        </button>
+        <button
+          onClick={() => editor.chain().focus().setCodeBlock().run()}
+          className={formatButtonClass(editor.isActive('codeBlock'))}
+          title='Code Block'
+        >
+          <Terminal size={16} />
+        </button>
+        {editor.isActive('codeBlock') && (
+          <LanguageSelect editor={editor}/>
+        )}
       </div>
 
       <BubbleMenu
