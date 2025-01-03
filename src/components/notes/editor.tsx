@@ -205,7 +205,11 @@ const TextEditor: React.FC<TextEditorProps> = ({
           levels: [1, 2, 3]
         },
         paragraph: false,
-        code: false,
+        code: {
+          HTMLAttributes: {
+            class: 'rounded px-1.5 py-0.5 font-mono text-sm',
+          },
+        },
       }),
       CodeBlockLowlight.configure({
         lowlight,
