@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Editor, useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+
 import { Markdown } from 'tiptap-markdown';
 import {
   Bold, Italic, Code, Heading1, Heading2, List,
