@@ -11,7 +11,7 @@ import { common, createLowlight } from 'lowlight';
 import {
   Bold, Italic, Code, Heading1, Heading2, List,
   ListOrdered, Quote, Minus, ChevronDown, Plus, Search,
-  Heading3, AlignLeft
+  Heading3, AlignLeft, Terminal
 } from 'lucide-react';
 
 
@@ -137,6 +137,11 @@ const CommandMenu: React.FC<CommandMenuProps> = ({ editor, isOpen, setIsOpen }) 
       title: 'Divider',
       icon: <Minus size={16} />,
       action: () => editor.chain().focus().setHorizontalRule().run()
+    },
+    {
+      title: 'Code Block',
+      icon: <Terminal size={16} />,
+      action: () => editor.chain().focus().setCodeBlock({ language: 'plain'}).run(),
     },
   ];
 
