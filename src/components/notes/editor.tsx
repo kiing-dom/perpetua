@@ -268,6 +268,12 @@ const TextEditor: React.FC<TextEditorProps> = ({
           }
         }
 
+        if (event.key === 'Tab' && view.state.selection.$from.parent.type.name === 'codeBlock') {
+          event.preventDefault();
+          view.dispatch(view.state.tr.insertText('  '));
+          return true;
+        }
+
         return false;
       },
     },
