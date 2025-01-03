@@ -4,6 +4,9 @@ import { Editor, useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { Markdown } from 'tiptap-markdown';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+
+import { common, createLowlight } from 'lowlight';
 
 import {
   Bold, Italic, Code, Heading1, Heading2, List,
@@ -11,9 +14,23 @@ import {
   Heading3, AlignLeft
 } from 'lucide-react';
 
+
 import { getEditorClassNames } from './styles/editor-styles';
 import './styles/editor.css';
 import CustomParagraph from './styles/CustomParagraph';
+import './styles/syntax-highlight.css';
+
+import js from 'highlight.js/lib/languages/javascript';
+import java from 'highlight.js/lib/languages/java';
+
+const lowlight = createLowlight(common);
+
+lowlight.register('js', js);
+lowlight.register('java', java);
+
+interface LanguageSelectProps {
+  editor: Editor;
+}
 
 interface CommandProps {
   title: string;
