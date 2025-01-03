@@ -32,6 +32,38 @@ interface LanguageSelectProps {
   editor: Editor;
 }
 
+const LanguageSelect: React.FC<LanguageSelectProps> = ({ editor }) => {
+  const languages = [
+    { label: 'Plain Text', value: 'text' },
+    { label: 'JavaScript', value: 'js'},
+    { label: 'Java', value: 'java'},
+  ];
+
+  const currentLanguage = editor.getAttributes('codeBlock').language || 'text';
+
+  return (
+    <select
+      className=''
+      value={currentLanguage}
+      onChange={(e) => {
+        editor
+          .chain()
+          .focus()
+          .setCodeBlock({ language: e.target.value })
+          .run();
+      }}
+    >
+      {languages.map((lang) => (
+        <option
+          key={lang.value} value={lang.value}
+        >
+          {lang.label}
+        </option>
+      ))}
+    </select>
+  )
+}
+
 interface CommandProps {
   title: string;
   icon: React.ReactNode;
