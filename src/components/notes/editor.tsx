@@ -22,6 +22,11 @@ import './styles/syntax-highlight.css';
 
 import js from 'highlight.js/lib/languages/javascript';
 import java from 'highlight.js/lib/languages/java';
+import python from 'highlight.js/lib/languages/python';
+import cpp from 'highlight.js/lib/languages/cpp';
+import c from 'highlight.js/lib/languages/c';
+import csharp from 'highlight.js/lib/languages/csharp';
+import php from 'highlight.js/lib/languages/php';
 
 const lowlight = createLowlight(common);
 
@@ -37,6 +42,10 @@ const LanguageSelect: React.FC<LanguageSelectProps> = ({ editor }) => {
     { label: 'Plain Text', value: 'text' },
     { label: 'JavaScript', value: 'js'},
     { label: 'Java', value: 'java'},
+    { label: 'Python', value: 'python'},
+    { label: 'C', value: 'c'},
+    { label: 'C#', value: 'csharp'},
+    { label: 'C++', value: 'cpp'},
   ];
 
   const currentLanguage = editor.getAttributes('codeBlock').language || 'text';
