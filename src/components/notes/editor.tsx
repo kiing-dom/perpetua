@@ -1,17 +1,85 @@
 import React, { useState, useEffect } from 'react';
+
 import { Editor, useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import { Markdown } from 'tiptap-markdown';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+
+import { common, createLowlight } from 'lowlight';
+
 import {
   Bold, Italic, Code, Heading1, Heading2, List,
   ListOrdered, Quote, Minus, ChevronDown, Plus, Search,
-  Heading3, AlignLeft
+  Heading3, AlignLeft, Terminal
 } from 'lucide-react';
+
 
 import { getEditorClassNames } from './styles/editor-styles';
 import './styles/editor.css';
 import CustomParagraph from './styles/CustomParagraph';
+import './styles/syntax-highlight.css';
+
+import js from 'highlight.js/lib/languages/javascript';
+import java from 'highlight.js/lib/languages/java';
+import python from 'highlight.js/lib/languages/python';
+import cpp from 'highlight.js/lib/languages/cpp';
+import c from 'highlight.js/lib/languages/c';
+import csharp from 'highlight.js/lib/languages/csharp';
+import php from 'highlight.js/lib/languages/php';
+
+const lowlight = createLowlight(common);
+
+lowlight.register('js', js);
+lowlight.register('java', java);
+lowlight.register('python', python);
+lowlight.register('cpp', cpp);
+lowlight.register('c', c);
+lowlight.register('csharp', csharp);
+lowlight.register('php', php);
+
+interface LanguageSelectProps {
+  editor: Editor;
+}
+
+const LanguageSelect: React.FC<LanguageSelectProps> = ({ editor }) => {
+  const languages = [
+    { label: 'Plain Text', value: 'text' },
+    { label: 'JavaScript', value: 'js'},
+    { label: 'Java', value: 'java'},
+    { label: 'Python', value: 'python'},
+    { label: 'C', value: 'c'},
+    { label: 'C#', value: 'csharp'},
+    { label: 'C++', value: 'cpp'},
+    { label: 'PHP', value: 'php' },
+  ];
+
+  const currentLanguage = editor.getAttributes('codeBlock').language || 'text';
+
+  return (
+    <select
+      className='bg-neutral-700 text-neutral-200 rounded px-2 py-1 outline-none border border-neutral-600 hover:border-500 focus:border-neutral-300'
+      value={currentLanguage}
+      onChange={(e) => {
+        editor
+          .chain()
+          .focus()
+          .setCodeBlock({ language: e.target.value })
+          .run();
+      }}
+    >
+      {languages.map((lang) => (
+        <option
+          key={lang.value} 
+          value={lang.value}
+          className={`bg-neutral-700 ${currentLanguage === lang.value ? 'text-white font-medium' : 'text-neutral-200' }`}
+        >
+          {lang.label}
+        </option>
+      ))}
+    </select>
+  )
+}
 
 interface CommandProps {
   title: string;
@@ -87,6 +155,11 @@ const CommandMenu: React.FC<CommandMenuProps> = ({ editor, isOpen, setIsOpen }) 
       icon: <Minus size={16} />,
       action: () => editor.chain().focus().setHorizontalRule().run()
     },
+    {
+      title: 'Code Block',
+      icon: <Terminal size={16} />,
+      action: () => editor.chain().focus().setCodeBlock({ language: 'plain'}).run(),
+    },
   ];
 
   const filteredCommands = commands.filter(command =>
@@ -149,6 +222,17 @@ const TextEditor: React.FC<TextEditorProps> = ({
           levels: [1, 2, 3]
         },
         paragraph: false,
+        code: {
+          HTMLAttributes: {
+            class: 'rounded px-1.5 py-0.5 font-mono text-sm',
+          },
+        },
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
+        HTMLAttributes: {
+          class: 'rounded bg-neutral p-4 font-mono text-sm'
+        }
       }),
       CustomParagraph,
       Placeholder.configure({
@@ -199,6 +283,12 @@ const TextEditor: React.FC<TextEditorProps> = ({
             console.error('Error handling keydown event:', error);
             return true;
           }
+        }
+
+        if (event.key === 'Tab' && view.state.selection.$from.parent.type.name === 'codeBlock') {
+          event.preventDefault();
+          view.dispatch(view.state.tr.insertText('  '));
+          return true;
         }
 
         return false;
@@ -252,6 +342,23 @@ const TextEditor: React.FC<TextEditorProps> = ({
         >
           <Heading3 size={16} />
         </button>
+        <button
+          onClick={() => editor.chain().focus().toggleCode().run()}
+          className={formatButtonClass(editor.isActive('code'))}
+          title='Inline Code'
+        >
+          <Code size={16} />
+        </button>
+        <button
+          onClick={() => editor.chain().focus().setCodeBlock().run()}
+          className={formatButtonClass(editor.isActive('codeBlock'))}
+          title='Code Block'
+        >
+          <Terminal size={16} />
+        </button>
+        {editor.isActive('codeBlock') && (
+          <LanguageSelect editor={editor}/>
+        )}
       </div>
 
       <BubbleMenu
