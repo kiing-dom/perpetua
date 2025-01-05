@@ -58,7 +58,7 @@ const LanguageSelect: React.FC<LanguageSelectProps> = ({ editor }) => {
 
   return (
     <select
-      className='bg-neutral-700 text-neutral-200 rounded px-2 py-1 outline-none border border-neutral-600 hover:border-500 focus:border-neutral-300'
+      className='bg-neutral-700 text-white font-semibold rounded px-2 py-1 outline-none border border-neutral-600 hover:border-500 focus:border-neutral-300'
       value={currentLanguage}
       onChange={(e) => {
         editor
@@ -72,7 +72,7 @@ const LanguageSelect: React.FC<LanguageSelectProps> = ({ editor }) => {
         <option
           key={lang.value} 
           value={lang.value}
-          className={`bg-neutral-700 ${currentLanguage === lang.value ? 'text-white font-medium' : 'text-neutral-200' }`}
+          className={`bg-neutral-700 ${currentLanguage === lang.value ? 'activetext-white font-medium' : 'text-neutral-400' }`}
         >
           {lang.label}
         </option>
