@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { Markdown } from 'tiptap-markdown';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 
-import { common, createLowlight } from 'lowlight';
+import { common, createLowlight, LanguageFn } from 'lowlight';
 
 import {
   Bold, Italic, Code, Heading1, Heading2, List,
@@ -30,13 +30,17 @@ import php from 'highlight.js/lib/languages/php';
 
 const lowlight = createLowlight(common);
 
-lowlight.register('js', js);
-lowlight.register('java', java);
-lowlight.register('python', python);
-lowlight.register('cpp', cpp);
-lowlight.register('c', c);
-lowlight.register('csharp', csharp);
-lowlight.register('php', php);
+const languages: [string, LanguageFn][] = [
+  ['js', js],
+  ['java', java],
+  ['python', python],
+  ['cpp', cpp],
+  ['c', c],
+  ['csharp', csharp],
+  ['php', php],
+];
+
+languages.forEach(([name, language]) => lowlight.register(name, language));
 
 interface LanguageSelectProps {
   editor: Editor;
