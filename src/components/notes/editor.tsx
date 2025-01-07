@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { Markdown } from 'tiptap-markdown';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 
-import { common, createLowlight } from 'lowlight';
+import { common, createLowlight, LanguageFn } from 'lowlight';
 
 import {
   Bold, Italic, Code, Heading1, Heading2, List,
@@ -30,56 +30,17 @@ import php from 'highlight.js/lib/languages/php';
 
 const lowlight = createLowlight(common);
 
-lowlight.register('js', js);
-lowlight.register('java', java);
-lowlight.register('python', python);
-lowlight.register('cpp', cpp);
-lowlight.register('c', c);
-lowlight.register('csharp', csharp);
-lowlight.register('php', php);
+const languages: [string, LanguageFn][] = [
+  ['js', js],
+  ['java', java],
+  ['python', python],
+  ['cpp', cpp],
+  ['c', c],
+  ['csharp', csharp],
+  ['php', php],
+];
 
-interface LanguageSelectProps {
-  editor: Editor;
-}
-
-const LanguageSelect: React.FC<LanguageSelectProps> = ({ editor }) => {
-  const languages = [
-    { label: 'Plain Text', value: 'text' },
-    { label: 'JavaScript', value: 'js'},
-    { label: 'Java', value: 'java'},
-    { label: 'Python', value: 'python'},
-    { label: 'C', value: 'c'},
-    { label: 'C#', value: 'csharp'},
-    { label: 'C++', value: 'cpp'},
-    { label: 'PHP', value: 'php' },
-  ];
-
-  const currentLanguage = editor.getAttributes('codeBlock').language || 'text';
-
-  return (
-    <select
-      className='bg-neutral-700 text-white font-semibold rounded px-2 py-1 outline-none border border-neutral-600 hover:border-500 focus:border-neutral-300'
-      value={currentLanguage}
-      onChange={(e) => {
-        editor
-          .chain()
-          .focus()
-          .setCodeBlock({ language: e.target.value })
-          .run();
-      }}
-    >
-      {languages.map((lang) => (
-        <option
-          key={lang.value} 
-          value={lang.value}
-          className={`bg-neutral-700 ${currentLanguage === lang.value ? 'activetext-white font-medium' : 'text-neutral-400' }`}
-        >
-          {lang.label}
-        </option>
-      ))}
-    </select>
-  )
-}
+languages.forEach(([name, language]) => lowlight.register(name, language));
 
 interface CommandProps {
   title: string;
@@ -103,6 +64,72 @@ interface TextEditorProps {
   defaultValue?: string;
   onChange?: (html: string) => void;
 }
+
+const CustomCodeBlock = CodeBlockLowlight.extend({
+  addNodeView() {
+    return ({ node, editor, getPos }) => {
+      const container = document.createElement('div');
+      container.classList.add('relative', 'group');
+
+      const select = document.createElement('select');
+      select.classList.add(
+        'absolute', 'right-2', 'top-2', 'bg-neutral-700',
+        'text-white', 'text-sm', 'rounded', 'px-2', 'py-2',
+        'border', 'border-neutral-600',
+        'opacity-0', 'group-hover:opacity-100',
+        'transition-opacity'
+      );
+
+      const languages = [
+        { label: 'Plain Text', language: 'text' },
+        { label: 'JavaScript', language: 'js' },
+        { label: 'Java', language: 'java' },
+        { label: 'Python', language: 'python' },
+        { label: 'C', language: 'c' },
+        { label: 'C#', language: 'csharp' },
+        { label: 'C++', language: 'cpp' },
+        { label: 'PHP', language: 'php' },
+      ];
+
+      languages.forEach(lang => {
+        const option = document.createElement('option');
+        option.value = lang.language;
+        option.textContent = lang.label;
+        if (node.attrs.language === lang.language) {
+          option.selected = true;
+        }
+        select.appendChild(option);
+      });
+
+      select.addEventListener('change', (e) => {
+        if(typeof getPos === 'function') {
+          const target = e.target as HTMLSelectElement;
+          editor.chain().focus().setCodeBlock({ language: target.value }).run();
+        }
+      });
+
+      const pre = document.createElement('pre');
+      pre.classList.add('rounded', 'bg-neutral-800', 'p-4', 'font-mono', 'text-sm');
+
+      const code = document.createElement('code');
+      code.textContent = node.textContent;
+
+      pre.appendChild(code);
+      container.appendChild(select);
+      container.appendChild(pre);
+
+      return {
+        dom: container,
+        contentDOM: code,
+        update: (updatedNode) => {
+          if (updatedNode.type !== node.type) return false;
+          code.textContent = updatedNode.textContent;
+          return true;
+        }
+      }
+    }
+  }
+})
 
 const CommandMenu: React.FC<CommandMenuProps> = ({ editor, isOpen, setIsOpen }) => {
   const [query, setQuery] = useState<string>('');
@@ -228,7 +255,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
           },
         },
       }),
-      CodeBlockLowlight.configure({
+      CustomCodeBlock.configure({
         lowlight,
         HTMLAttributes: {
           class: 'rounded bg-neutral p-4 font-mono text-sm'
@@ -356,9 +383,6 @@ const TextEditor: React.FC<TextEditorProps> = ({
         >
           <Terminal size={16} />
         </button>
-        {editor.isActive('codeBlock') && (
-          <LanguageSelect editor={editor}/>
-        )}
       </div>
 
       <BubbleMenu
