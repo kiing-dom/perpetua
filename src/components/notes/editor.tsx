@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { Editor, useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -291,7 +291,32 @@ const VoiceNote = Extension.create({
 });
 
 // Voice Recorder Component
+interface VoiceRecorderProps {
+  onRecordingComplete: (audioBlob: Blob, duration: number) => void;
+}
 
+const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) => {
+  const [isRecording, setIsRecording] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<number | null>(null);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      chunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e: BlobEvent) => {
+        chunksRef.current.push(e.data);
+
+        // continue tomorrow
+      }
+    }
+  }
+}
 
 const TextEditor: React.FC<TextEditorProps> = ({
   defaultValue = '',
