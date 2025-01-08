@@ -11,7 +11,8 @@ import { common, createLowlight, LanguageFn } from 'lowlight';
 import {
   Bold, Italic, Code, Heading1, Heading2, List,
   ListOrdered, Quote, Minus, ChevronDown, Plus, Search,
-  Heading3, AlignLeft, Terminal
+  Heading3, AlignLeft, Terminal,
+  Mic, Square, Play, Pause
 } from 'lucide-react';
 
 
