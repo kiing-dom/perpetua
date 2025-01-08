@@ -6,6 +6,9 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { Markdown } from 'tiptap-markdown';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 
+import { Extension } from '@tiptap/core';
+import { Plugin, PluginKey } from 'prosemirror-state'
+
 import { common, createLowlight, LanguageFn } from 'lowlight';
 
 import {
@@ -235,8 +238,12 @@ const CustomCodeBlock = CodeBlockLowlight.extend({
       }
     }
   }
-})
+});
 
+// Voice Note Extension
+const VoiceNote = Extension.create({
+  
+})
 
 const TextEditor: React.FC<TextEditorProps> = ({
   defaultValue = '',
