@@ -290,6 +290,7 @@ const VoiceNote = Extension.create({
   }
 });
 
+// Voice Recorder Component
 
 
 const TextEditor: React.FC<TextEditorProps> = ({
