@@ -242,8 +242,55 @@ const CustomCodeBlock = CodeBlockLowlight.extend({
 
 // Voice Note Extension
 const VoiceNote = Extension.create({
-  
-})
+  name: 'voiceNote',
+
+  addOptions() {
+    return {
+      HTMLAttributes: {
+        class: 'voice-note-container',
+      },
+    };
+  },
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: ['paragraph'],
+        attributes: {
+          audioUrl: {
+            default: null,
+          },
+          duration: {
+            default: 0,
+          },
+        },
+      },
+    ];
+  },
+
+  addNodeView() {
+    return ({ node }) => {
+      const dom = document.createElement('div');
+      dom.innerHTML = `
+        <div class="flex items-center gap-2 p-2 bg-neutral-700 rounded">
+          <button class="play-button">
+            <Play size={16} />
+          </button>
+          <div class="flex-1">
+            <div class="h-1 bg-neutral-600 rounded">
+              <div class="h-full bg-blue-500 rounded" style="width: 0%"></div>
+            </div>
+          </div>
+          <span class="text-xs text-neutral-400">${formatDuration(node.attrs.duration)}</span>
+        </div>
+      `;
+
+      return { dom }
+    }
+  }
+});
+
+
 
 const TextEditor: React.FC<TextEditorProps> = ({
   defaultValue = '',
