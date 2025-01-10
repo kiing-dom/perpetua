@@ -311,12 +311,56 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
 
       mediaRecorder.ondataavailable = (e: BlobEvent) => {
         chunksRef.current.push(e.data);
+      };
 
-        // continue tomorrow
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav'});
+        onRecordingComplete(audioBlob, duration);
+        setDuration(0);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+
+      // start timer
+      let seconds = 0;
+      timerRef.current = window.setInterval(() => {
+        seconds += 1;
+        setDuration(seconds);
+      }, 1000);
+
+    } catch (err) {
+      console.error('Error accessing microphone:');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
       }
     }
-  }
-}
+  };
+
+  return (
+    <button
+      className={`p-2 rounded ${isRecording ? 'bg-red-500' : 'bg-neutral-700'}`}
+      onClick={isRecording ? stopRecording : startRecording}
+      title={isRecording ? 'Stop Recording' : 'Start Recording'}
+    >
+      {isRecording ? <Square size={16} /> : <Mic size={16} /> }
+    </button>
+  );
+};
+
+const formatDuration = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
 
 const TextEditor: React.FC<TextEditorProps> = ({
   defaultValue = '',
@@ -361,7 +405,8 @@ const TextEditor: React.FC<TextEditorProps> = ({
         html: false,
         transformPastedText: true,
         transformCopiedText: true
-      })
+      }),
+      VoiceNote
     ],
     content: defaultValue,
     onUpdate: ({ editor }) => {
@@ -417,6 +462,14 @@ const TextEditor: React.FC<TextEditorProps> = ({
   const formatButtonClass = (isActive: boolean) =>
     `p-2 rounded hover:bg-neutral-700 ${isActive ? 'bg-neutral-700' : ''}`;
 
+  const handleRecordingComplete = (audioBlob: Blob, duration : number) => {
+    const audioUrl = URL.createObjectURL(audioBlob);
+    editor?.chain().focus().insertContent({
+      type: 'voiceNote',
+      attrs: { audioUrl, duration }
+    }).run();
+  }
+
   return (
     <div className="relative border border-neutral-600 rounded-lg bg-neutral-800 text-neutral-200">
       <div
@@ -466,6 +519,9 @@ const TextEditor: React.FC<TextEditorProps> = ({
         >
           <Terminal size={16} />
         </button>
+
+        <div className='h-4 w-px bg-neutral-600 mx-1' />
+        <VoiceRecorder onRecordingComplete={handleRecordingComplete} />
       </div>
 
       <BubbleMenu
