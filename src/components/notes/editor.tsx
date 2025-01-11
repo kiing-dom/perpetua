@@ -240,6 +240,19 @@ const CustomCodeBlock = CodeBlockLowlight.extend({
   }
 });
 
+interface VoiceNoteAttributes {
+  audioUrl: string | null;
+  duration: number;
+}
+
+interface VoiceNoteNode {
+  attrs: VoiceNoteAttributes;
+  type: {
+    name: string;
+  };
+}
+
+
 // Voice Note Extension
 const VoiceNote = Extension.create({
   name: 'voiceNote',
@@ -269,7 +282,7 @@ const VoiceNote = Extension.create({
   },
 
   addNodeView() {
-    return ({ node }) => {
+    return ({ node }: { node: VoiceNoteNode }) => {
       const container = document.createElement('div');
       container.className = 'voice-note-container';
 
@@ -294,7 +307,7 @@ const VoiceNote = Extension.create({
       timeDisplay.className = 'text-xs text-neutral-400';
       timeDisplay.textContent = formatDuration(node.attrs.duration);
 
-      const audio = new Audio(node.attrs.audioUrl);
+      const audio = new Audio(node.attrs.audioUrl ?? '');
       let isPlaying = false;
 
       playButton.addEventListener('click', () => {
