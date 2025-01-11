@@ -269,7 +269,84 @@ const VoiceNote = Extension.create({
   },
 
   addNodeView() {
-    
+    return ({ node }) => {
+      const container = document.createElement('div');
+      container.className = 'voice-note-container';
+
+      const playbackContainer = document.createElement('div');
+      playbackContainer.className = 'flex items-center gap-2 p-2 bg-neutral-700 rounded';
+
+      const playButton = document.createElement('button');
+      playButton.className = 'play-button text-neutral-200 hover:text-neutral-100';
+      playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`
+
+      const progressContainer = document.createElement('div');
+      progressContainer.className = 'flex-1';
+
+      const progressBar = document.createElement('div');
+      progressBar.className = 'h-1 bg-neutral-600 rounded cursor-pointer';
+
+      const progressFill = document.createElement('div');
+      progressFill.className = 'h-full bg-blue-500 rounded';
+      progressFill.style.width = '0%';
+
+      const timeDisplay = document.createElement('span');
+      timeDisplay.className = 'text-xs text-neutral-400';
+      timeDisplay.textContent = formatDuration(node.attrs.duration);
+
+      const audio = new Audio(node.attrs.audioUrl);
+      let isPlaying = false;
+
+      playButton.addEventListener('click', () => {
+        if(isPlaying) {
+          audio.pause();
+          playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+        } else {
+          audio.play();
+          playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+        }
+        isPlaying = !isPlaying;
+      });
+
+      audio.addEventListener('timeupdate', () => {
+        const progress = (audio.currentTime / audio.duration) * 100;
+        progressFill.style.width = `${progress}%`;
+        timeDisplay.textContent = `${formatDuration(Math.floor(audio.currentTime))} / ${formatDuration(Math.floor(audio.duration))}`;
+      });
+
+      // Handle clicking on progress bar
+      progressBar.addEventListener('click', (e) => {
+        const rect = progressBar.getBoundingClientRect();
+        const clickPosition = (e.clientX - rect.left) / rect.width;
+        audio.currentTime = clickPosition * audio.duration;
+      });
+
+      // Reset on playback end
+      audio.addEventListener('ended', () => {
+        isPlaying = false;
+        playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+        progressFill.style.width = '0%';
+        timeDisplay.textContent = formatDuration(node.attrs.duration);
+      });
+
+      const cleanup = () => {
+        audio.pause();
+        audio.src = '';
+        audio.remove();
+      };
+
+      progressBar.appendChild(progressFill);
+      progressContainer.appendChild(progressBar);
+      playbackContainer.appendChild(playButton);
+      playbackContainer.appendChild(progressContainer);
+      playbackContainer.appendChild(timeDisplay);
+      container.appendChild(playbackContainer);
+
+      return {
+        dom: container,
+        destroy: cleanup
+      }
+    }
   }
 });
 
