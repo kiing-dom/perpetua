@@ -371,9 +371,11 @@ interface VoiceRecorderProps {
 const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
+  const [progress, setProgress] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<number | null>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
 
   const startRecording = async () => {
     try {
@@ -383,28 +385,36 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
       chunksRef.current = [];
 
       mediaRecorder.ondataavailable = (e: BlobEvent) => {
-        chunksRef.current.push(e.data);
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav'});
-        onRecordingComplete(audioBlob, duration);
+        const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
+        if (chunksRef.current.length > 0) {
+          onRecordingComplete(audioBlob, duration);
+        }
         setDuration(0);
+        setProgress(0);
         stream.getTracks().forEach(track => track.stop());
       };
 
-      mediaRecorder.start();
+      // Request data every 100ms to update progress
+      mediaRecorder.start(100);
       setIsRecording(true);
 
-      // start timer
+      // Start timer
       let seconds = 0;
       timerRef.current = window.setInterval(() => {
         seconds += 1;
         setDuration(seconds);
+        // Update progress (0-100)
+        setProgress((seconds % 60) * (100 / 60));
       }, 1000);
 
     } catch (err) {
-      console.error('Error accessing microphone:');
+      console.error('Error accessing microphone:', err);
     }
   };
 
@@ -418,14 +428,43 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
     }
   };
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      if (mediaRecorderRef.current && isRecording) {
+        mediaRecorderRef.current.stop();
+      }
+    };
+  }, [isRecording]);
+
   return (
-    <button
-      className={`p-2 rounded ${isRecording ? 'bg-red-500' : 'bg-neutral-700'}`}
-      onClick={isRecording ? stopRecording : startRecording}
-      title={isRecording ? 'Stop Recording' : 'Start Recording'}
-    >
-      {isRecording ? <Square size={16} /> : <Mic size={16} /> }
-    </button>
+    <div className="flex items-center gap-2">
+      <button
+        className={`p-2 rounded ${isRecording ? 'bg-red-500' : 'bg-neutral-700'} text-white`}
+        onClick={isRecording ? stopRecording : startRecording}
+        title={isRecording ? 'Stop Recording' : 'Start Recording'}
+      >
+        {isRecording ? <Square size={16} /> : <Mic size={16} />}
+      </button>
+      
+      {isRecording && (
+        <div className="flex items-center gap-2 flex-1">
+          <div className="w-24 h-1 bg-neutral-600 rounded overflow-hidden">
+            <div
+              ref={progressBarRef}
+              className="h-full bg-red-500 transition-all duration-200"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="text-xs text-neutral-400">
+            {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')}
+          </span>
+        </div>
+      )}
+    </div>
   );
 };
 
