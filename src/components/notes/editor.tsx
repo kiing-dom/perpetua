@@ -8,6 +8,7 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 
 import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from 'prosemirror-state'
+import { Decoration, DecorationSet } from 'prosemirror-view';
 
 import { common, createLowlight, LanguageFn } from 'lowlight';
 
@@ -265,7 +266,7 @@ const VoiceNote = Extension.create({
     };
   },
 
-  addGlobalAttributes() {
+  addAttributes() {
     return [
       {
         types: ['paragraph'],
@@ -281,85 +282,98 @@ const VoiceNote = Extension.create({
     ];
   },
 
-  addNodeView() {
-    return ({ node }: { node: VoiceNoteNode }) => {
-      const container = document.createElement('div');
-      container.className = 'voice-note-container';
+  aaddProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey('voiceNote'),
+        props: {
+          decorations: (state) => {
+            const { doc } = state;
+            const decorations: Decoration[] = [];
 
-      const playbackContainer = document.createElement('div');
-      playbackContainer.className = 'flex items-center gap-2 p-2 bg-neutral-700 rounded';
+            doc.descendants((node, pos) => {
+              if (node.type.name === 'paragraph' && node.attrs.audioUrl) {
+                const dom = document.createElement('div');
+                dom.className = 'voice-note my-2';
 
-      const playButton = document.createElement('button');
-      playButton.className = 'play-button text-neutral-200 hover:text-neutral-100';
-      playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`
+                const playbackContainer = document.createElement('div');
+                playbackContainer.className = 'flex items-center gap-2 p-2 bg-neutral-700 rounded';
 
-      const progressContainer = document.createElement('div');
-      progressContainer.className = 'flex-1';
+                const playButton = document.createElement('button');
+                playButton.className = 'play-button text-neutral-200 hover:text-neutral-100';
+                playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
 
-      const progressBar = document.createElement('div');
-      progressBar.className = 'h-1 bg-neutral-600 rounded cursor-pointer';
+                const progressContainer = document.createElement('div');
+                progressContainer.className = 'flex-1';
 
-      const progressFill = document.createElement('div');
-      progressFill.className = 'h-full bg-blue-500 rounded';
-      progressFill.style.width = '0%';
+                const progressBar = document.createElement('div');
+                progressBar.className = 'h-1 bg-neutral-600 rounded cursor-pointer';
 
-      const timeDisplay = document.createElement('span');
-      timeDisplay.className = 'text-xs text-neutral-400';
-      timeDisplay.textContent = formatDuration(node.attrs.duration);
+                const progressFill = document.createElement('div');
+                progressFill.className = 'h-full bg-blue-500 rounded';
+                progressFill.style.width = '0%';
 
-      const audio = new Audio(node.attrs.audioUrl ?? '');
-      let isPlaying = false;
+                const timeDisplay = document.createElement('span');
+                timeDisplay.className = 'text-xs text-neutral-400';
+                timeDisplay.textContent = formatDuration(node.attrs.duration || 0);
 
-      playButton.addEventListener('click', () => {
-        if(isPlaying) {
-          audio.pause();
-          playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
-        } else {
-          audio.play();
-          playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+                const audio = new Audio(node.attrs.audioUrl);
+                let isPlaying = false;
+
+                playButton.onclick = () => {
+                  if (isPlaying) {
+                    audio.pause();
+                    playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+                  } else {
+                    audio.play();
+                    playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+                  }
+                  isPlaying = !isPlaying;
+                };
+
+                audio.ontimeupdate = () => {
+                  const progress = (audio.currentTime / audio.duration) * 100;
+                  progressFill.style.width = `${progress}%`;
+                  timeDisplay.textContent = `${formatDuration(Math.floor(audio.currentTime))} / ${formatDuration(Math.floor(audio.duration))}`;
+                };
+
+                progressBar.onclick = (e) => {
+                  const rect = progressBar.getBoundingClientRect();
+                  const clickPosition = (e.clientX - rect.left) / rect.width;
+                  audio.currentTime = clickPosition * audio.duration;
+                };
+
+                audio.onended = () => {
+                  isPlaying = false;
+                  playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+                  progressFill.style.width = '0%';
+                  timeDisplay.textContent = formatDuration(node.attrs.duration || 0);
+                };
+
+                progressBar.appendChild(progressFill);
+                progressContainer.appendChild(progressBar);
+                playbackContainer.appendChild(playButton);
+                playbackContainer.appendChild(progressContainer);
+                playbackContainer.appendChild(timeDisplay);
+                dom.appendChild(playbackContainer);
+
+                const decoration = document.createElement('div');
+                decoration.appendChild(dom);
+
+                decorations.push(
+                  Decoration.widget(pos + node.nodeSize, decoration, {
+                    side: 1,
+                    key: node.attrs.audioUrl
+                  })
+                );
+              }
+            });
+
+            return DecorationSet.create(doc, decorations);
+          }
         }
-        isPlaying = !isPlaying;
-      });
-
-      audio.addEventListener('timeupdate', () => {
-        const progress = (audio.currentTime / audio.duration) * 100;
-        progressFill.style.width = `${progress}%`;
-        timeDisplay.textContent = `${formatDuration(Math.floor(audio.currentTime))} / ${formatDuration(Math.floor(audio.duration))}`;
-      });
-
-      // Handle clicking on progress bar
-      progressBar.addEventListener('click', (e) => {
-        const rect = progressBar.getBoundingClientRect();
-        const clickPosition = (e.clientX - rect.left) / rect.width;
-        audio.currentTime = clickPosition * audio.duration;
-      });
-
-      // Reset on playback end
-      audio.addEventListener('ended', () => {
-        isPlaying = false;
-        playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
-        progressFill.style.width = '0%';
-        timeDisplay.textContent = formatDuration(node.attrs.duration);
-      });
-
-      const cleanup = () => {
-        audio.pause();
-        audio.src = '';
-        audio.remove();
-      };
-
-      progressBar.appendChild(progressFill);
-      progressContainer.appendChild(progressBar);
-      playbackContainer.appendChild(playButton);
-      playbackContainer.appendChild(progressContainer);
-      playbackContainer.appendChild(timeDisplay);
-      container.appendChild(playbackContainer);
-
-      return {
-        dom: container,
-        destroy: cleanup
-      }
-    }
+      })
+    ];
   }
 });
 
@@ -374,8 +388,8 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
   const [progress, setProgress] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<number | null>(null);
-  const progressBarRef = useRef<HTMLDivElement>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number>(0);
 
   const startRecording = async () => {
     try {
@@ -383,6 +397,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
+      setDuration(0);
 
       mediaRecorder.ondataavailable = (e: BlobEvent) => {
         if (e.data.size > 0) {
@@ -392,26 +407,19 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
 
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
-        if (chunksRef.current.length > 0) {
-          onRecordingComplete(audioBlob, duration);
-        }
-        setDuration(0);
-        setProgress(0);
+        onRecordingComplete(audioBlob, duration);
         stream.getTracks().forEach(track => track.stop());
       };
 
       // Request data every 100ms to update progress
       mediaRecorder.start(100);
       setIsRecording(true);
+      startTimeRef.current = Date.now();
 
-      // Start timer
-      let seconds = 0;
-      timerRef.current = window.setInterval(() => {
-        seconds += 1;
-        setDuration(seconds);
-        // Update progress (0-100)
-        setProgress((seconds % 60) * (100 / 60));
-      }, 1000);
+      intervalRef.current = setInterval(() => {
+        const currentDuration = Math.floor((Date.now() - startTimeRef.current) / 1000);
+        setDuration(currentDuration);
+      }, 100);
 
     } catch (err) {
       console.error('Error accessing microphone:', err);
@@ -419,26 +427,16 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
+
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     }
   };
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-      if (mediaRecorderRef.current && isRecording) {
-        mediaRecorderRef.current.stop();
-      }
-    };
-  }, [isRecording]);
 
   return (
     <div className="flex items-center gap-2">
@@ -454,7 +452,6 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
         <div className="flex items-center gap-2 flex-1">
           <div className="w-24 h-1 bg-neutral-600 rounded overflow-hidden">
             <div
-              ref={progressBarRef}
               className="h-full bg-red-500 transition-all duration-200"
               style={{ width: `${progress}%` }}
             />
