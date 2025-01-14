@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { Markdown } from 'tiptap-markdown';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 
-import { Extension } from '@tiptap/core';
+import { Extension, mergeAttributes, Node } from '@tiptap/core';
 import { Plugin, PluginKey } from 'prosemirror-state'
 import { Decoration, DecorationSet } from 'prosemirror-view';
 
@@ -241,48 +241,90 @@ const CustomCodeBlock = CodeBlockLowlight.extend({
   }
 });
 
+interface VoiceNoteOptions {
+  HTMLAttributes: Record<string, any>;
+}
+
 interface VoiceNoteAttributes {
   audioUrl: string | null;
   duration: number;
 }
 
-interface VoiceNoteNode {
-  attrs: VoiceNoteAttributes;
-  type: {
-    name: string;
-  };
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    voiceNote: {
+      setVoiceNote: (attributes: VoiceNoteAttributes) => ReturnType;
+    };
+  }
 }
 
-
-// Voice Note Extension
-const VoiceNote = Extension.create({
+const VoiceNote = Node.create<VoiceNoteOptions>({
   name: 'voiceNote',
 
   addOptions() {
     return {
       HTMLAttributes: {
-        class: 'voice-note-container',
+        class: 'voice-note',
       },
     };
   },
 
   addAttributes() {
+    return {
+      audioUrl: {
+        default: null,
+        parseHTML: (element: HTMLElement) => element.getAttribute('data-audio-url'),
+        renderHTML: (attributes: VoiceNoteAttributes) => ({
+          'data-audio-url': attributes.audioUrl,
+        }),
+      },
+      duration: {
+        default: 0,
+        parseHTML: (element: HTMLElement) => parseInt(element.getAttribute('data-duration') ?? '0'),
+        renderHTML: (attributes: VoiceNoteAttributes) => ({
+          'data-duration': attributes.duration,
+        }),
+      },
+    };
+  },
+
+  group: 'block',
+
+  content: 'inline*',
+
+  parseHTML() {
     return [
       {
-        types: ['paragraph'],
-        attributes: {
-          audioUrl: {
-            default: null,
-          },
-          duration: {
-            default: 0,
-          },
-        },
+        tag: 'div[data-type="voice-note"]',
       },
     ];
   },
 
-  aaddProseMirrorPlugins() {
+  renderHTML({ HTMLAttributes } : { HTMLAttributes: Record<string, any> }) {
+    return [
+      'div',
+      {
+        ...this.options.HTMLAttributes,
+        ...HTMLAttributes,
+        'data-type': 'voice-note',
+        'data-audio-url': HTMLAttributes.audioUrl || '',
+        'data-duration': HTMLAttributes.duration || 0,
+      },
+      0,
+    ];
+  },
+
+  addCommands() {
+    return {
+      setVoiceNote:
+        (attributes: VoiceNoteAttributes) =>
+        ({ commands }) => {
+          return commands.setNode(this.name, attributes);
+        },
+    };
+  },
+
+  addProseMirrorPlugins() {
     return [
       new Plugin({
         key: new PluginKey('voiceNote'),
@@ -292,7 +334,7 @@ const VoiceNote = Extension.create({
             const decorations: Decoration[] = [];
 
             doc.descendants((node, pos) => {
-              if (node.type.name === 'paragraph' && node.attrs.audioUrl) {
+              if (node.type.name === 'voiceNote') {
                 const dom = document.createElement('div');
                 dom.className = 'voice-note my-2';
 
@@ -315,10 +357,12 @@ const VoiceNote = Extension.create({
 
                 const timeDisplay = document.createElement('span');
                 timeDisplay.className = 'text-xs text-neutral-400';
-                timeDisplay.textContent = formatDuration(node.attrs.duration || 0);
+                timeDisplay.textContent = formatDuration(node.attrs.duration);
 
                 const audio = new Audio(node.attrs.audioUrl);
                 let isPlaying = false;
+                
+                console.log(node.attrs);
 
                 playButton.onclick = () => {
                   if (isPlaying) {
@@ -347,7 +391,7 @@ const VoiceNote = Extension.create({
                   isPlaying = false;
                   playButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
                   progressFill.style.width = '0%';
-                  timeDisplay.textContent = formatDuration(node.attrs.duration || 0);
+                  timeDisplay.textContent = formatDuration(node.attrs.duration);
                 };
 
                 progressBar.appendChild(progressFill);
@@ -357,14 +401,8 @@ const VoiceNote = Extension.create({
                 playbackContainer.appendChild(timeDisplay);
                 dom.appendChild(playbackContainer);
 
-                const decoration = document.createElement('div');
-                decoration.appendChild(dom);
-
                 decorations.push(
-                  Decoration.widget(pos + node.nodeSize, decoration, {
-                    side: 1,
-                    key: node.attrs.audioUrl
-                  })
+                  Decoration.widget(pos, dom, { side: -1 })
                 );
               }
             });
@@ -376,7 +414,6 @@ const VoiceNote = Extension.create({
     ];
   }
 });
-
 // Voice Recorder Component
 interface VoiceRecorderProps {
   onRecordingComplete: (audioBlob: Blob, duration: number) => void;
