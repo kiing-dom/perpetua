@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { Markdown } from 'tiptap-markdown';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 
-import { Extension, mergeAttributes, Node } from '@tiptap/core';
+import { Node } from '@tiptap/core';
 import { Plugin, PluginKey } from 'prosemirror-state'
 import { Decoration, DecorationSet } from 'prosemirror-view';
 
@@ -16,7 +16,7 @@ import {
   Bold, Italic, Code, Heading1, Heading2, List,
   ListOrdered, Quote, Minus, ChevronDown, Plus, Search,
   Heading3, AlignLeft, Terminal,
-  Mic, Square, Play, Pause
+  Mic, Square
 } from 'lucide-react';
 
 
@@ -422,7 +422,7 @@ interface VoiceRecorderProps {
 const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [duration, setDuration] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [progress] = useState(0);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
