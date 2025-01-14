@@ -394,6 +394,27 @@ const VoiceNote = Node.create<VoiceNoteOptions>({
                   timeDisplay.textContent = formatDuration(node.attrs.duration);
                 };
 
+                // volume slider
+                const volumeContainer = document.createElement('div');
+                volumeContainer.className = 'flex items-cemter gap-2';
+
+                const volumeLabel = document.createElement('span');
+                volumeLabel.className = 'text-xs text-neutral-400';
+                volumeLabel.textContent = 'Volume';
+
+                const volumeSlider = document.createElement('input');
+                volumeSlider.type = 'range';
+                volumeSlider.min = '0';
+                volumeSlider.max = '1';
+                volumeSlider.step = '0.1';
+                volumeSlider.value = '0.3';
+                volumeSlider.className = 'volume-slider w-24';
+
+                volumeSlider.oninput = (e) => {
+                  const target = e.target as HTMLInputElement;
+                  audio.volume = parseFloat(target.value);
+                }
+
                 progressBar.appendChild(progressFill);
                 progressContainer.appendChild(progressBar);
                 playbackContainer.appendChild(playButton);
