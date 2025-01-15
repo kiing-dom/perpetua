@@ -420,6 +420,7 @@ const VoiceNote = Node.create<VoiceNoteOptions>({
                 playbackContainer.appendChild(playButton);
                 playbackContainer.appendChild(progressContainer);
                 playbackContainer.appendChild(timeDisplay);
+                playbackContainer.append(volumeContainer);
                 dom.appendChild(playbackContainer);
 
                 decorations.push(
@@ -449,10 +450,49 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
 
+  // audio processing
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null); 
+
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          channelCount: 2,
+          sampleRate: 48000,
+          sampleSize: 24,
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: false,
+        }
+      });
+
+      audioContextRef.current = new AudioContext({
+        sampleRate: 48000,
+        latencyHint: 'interactive',
+      });
+
+      sourceNodeRef.current = audioContextRef.current.createMediaStreamSource(stream);
+      gainNodeRef.current = audioContextRef.current.createGain();
+      analyserRef.current = audioContextRef.current.createAnalyser();
+
+      gainNodeRef.current.gain.value = 0.8;
+      analyserRef.current.fftSize = 2048;
+      analyserRef.current.smoothingTimeConstant = 0.8;
+
+      sourceNodeRef.current
+        .connect(gainNodeRef.current)
+        .connect(analyserRef.current)
+        .connect(audioContextRef.current.destination);
+
+
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus',
+        audioBitsPerSecond: 128000
+      });
+
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
       setDuration(0);
@@ -464,13 +504,20 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
+        const audioBlob = new Blob(chunksRef.current, {
+          type: 'audio/webm;codecs=opus'
+        });
+
+        if (audioContextRef.current) {
+          audioContextRef.current.close();
+        }
+
         onRecordingComplete(audioBlob, duration);
         stream.getTracks().forEach(track => track.stop());
       };
 
       // Request data every 100ms to update progress
-      mediaRecorder.start(100);
+      mediaRecorder.start(50);
       setIsRecording(true);
       startTimeRef.current = Date.now();
 
