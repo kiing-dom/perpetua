@@ -6,7 +6,7 @@ import Modal from "@/components/ui/modal";
 import Login from "@/components/auth/login-form";
 import useAuthStore from "../../store/useAuthStore";
 import useNotesStore from "../../store/useNotesStore";
-import TextEditor from '@/components/notes/editor';
+import TextEditor from '@/components/text-editor/editor';
 
 interface Note {
   id: string;
