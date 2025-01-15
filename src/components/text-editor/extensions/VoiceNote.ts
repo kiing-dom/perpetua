@@ -206,5 +206,7 @@ interface VoiceNoteOptions {
       ];
     }
   });
+
+  export default VoiceNote;
   
   
