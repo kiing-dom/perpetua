@@ -396,7 +396,7 @@ const VoiceNote = Node.create<VoiceNoteOptions>({
 
                 // volume slider
                 const volumeContainer = document.createElement('div');
-                volumeContainer.className = 'flex items-cemter gap-2';
+                volumeContainer.className = 'flex items-cemter gap-2 bg-neutral-700';
 
                 const volumeLabel = document.createElement('span');
                 volumeLabel.className = 'text-xs text-neutral-400';
@@ -407,13 +407,16 @@ const VoiceNote = Node.create<VoiceNoteOptions>({
                 volumeSlider.min = '0';
                 volumeSlider.max = '1';
                 volumeSlider.step = '0.1';
-                volumeSlider.value = '0.3';
+                volumeSlider.value = '0.7';
                 volumeSlider.className = 'volume-slider w-24';
 
                 volumeSlider.oninput = (e) => {
                   const target = e.target as HTMLInputElement;
                   audio.volume = parseFloat(target.value);
                 }
+
+                volumeContainer.appendChild(volumeLabel);
+                volumeContainer.appendChild(volumeSlider);
 
                 progressBar.appendChild(progressFill);
                 progressContainer.appendChild(progressBar);
@@ -460,17 +463,17 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
-          channelCount: 2,
-          sampleRate: 48000,
-          sampleSize: 24,
+          channelCount: 1,
+          sampleRate: 44100,
+          sampleSize: 16,
           echoCancellation: true,
-          noiseSuppression: true,
+          noiseSuppression: false,
           autoGainControl: false,
         }
       });
 
       audioContextRef.current = new AudioContext({
-        sampleRate: 48000,
+        sampleRate: 44100,
         latencyHint: 'interactive',
       });
 
@@ -478,19 +481,18 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
       gainNodeRef.current = audioContextRef.current.createGain();
       analyserRef.current = audioContextRef.current.createAnalyser();
 
-      gainNodeRef.current.gain.value = 0.8;
-      analyserRef.current.fftSize = 2048;
-      analyserRef.current.smoothingTimeConstant = 0.8;
+      gainNodeRef.current.gain.value = 2;
+      analyserRef.current.fftSize = 1024;
+      analyserRef.current.smoothingTimeConstant = 0.6;
 
       sourceNodeRef.current
         .connect(gainNodeRef.current)
-        .connect(analyserRef.current)
-        .connect(audioContextRef.current.destination);
+        .connect(analyserRef.current);
 
 
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus',
-        audioBitsPerSecond: 128000
+        audioBitsPerSecond: 256000
       });
 
       mediaRecorderRef.current = mediaRecorder;
@@ -517,7 +519,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
       };
 
       // Request data every 100ms to update progress
-      mediaRecorder.start(50);
+      mediaRecorder.start(10);
       setIsRecording(true);
       startTimeRef.current = Date.now();
 
