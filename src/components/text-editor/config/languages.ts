@@ -8,7 +8,7 @@ import php from 'highlight.js/lib/languages/php';
 
 import { LanguageFn } from 'lowlight';
 
-const languages: [string, LanguageFn][] = [
+export const languages: [string, LanguageFn][] = [
   ['js', js],
   ['java', java],
   ['python', python],
