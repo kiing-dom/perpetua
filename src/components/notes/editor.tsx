@@ -394,11 +394,36 @@ const VoiceNote = Node.create<VoiceNoteOptions>({
                   timeDisplay.textContent = formatDuration(node.attrs.duration);
                 };
 
+                // volume slider
+                const volumeContainer = document.createElement('div');
+                volumeContainer.className = 'flex items-cemter gap-2 bg-neutral-700';
+
+                const volumeLabel = document.createElement('span');
+                volumeLabel.className = 'text-xs text-neutral-400';
+                volumeLabel.textContent = 'Volume';
+
+                const volumeSlider = document.createElement('input');
+                volumeSlider.type = 'range';
+                volumeSlider.min = '0';
+                volumeSlider.max = '1';
+                volumeSlider.step = '0.1';
+                volumeSlider.value = '0.7';
+                volumeSlider.className = 'volume-slider w-24';
+
+                volumeSlider.oninput = (e) => {
+                  const target = e.target as HTMLInputElement;
+                  audio.volume = parseFloat(target.value);
+                }
+
+                volumeContainer.appendChild(volumeLabel);
+                volumeContainer.appendChild(volumeSlider);
+
                 progressBar.appendChild(progressFill);
                 progressContainer.appendChild(progressBar);
                 playbackContainer.appendChild(playButton);
                 playbackContainer.appendChild(progressContainer);
                 playbackContainer.appendChild(timeDisplay);
+                playbackContainer.append(volumeContainer);
                 dom.appendChild(playbackContainer);
 
                 decorations.push(
@@ -428,10 +453,48 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
 
+  // audio processing
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null); 
+
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          channelCount: 1,
+          sampleRate: 44100,
+          sampleSize: 16,
+          echoCancellation: true,
+          noiseSuppression: false,
+          autoGainControl: false,
+        }
+      });
+
+      audioContextRef.current = new AudioContext({
+        sampleRate: 44100,
+        latencyHint: 'interactive',
+      });
+
+      sourceNodeRef.current = audioContextRef.current.createMediaStreamSource(stream);
+      gainNodeRef.current = audioContextRef.current.createGain();
+      analyserRef.current = audioContextRef.current.createAnalyser();
+
+      gainNodeRef.current.gain.value = 2;
+      analyserRef.current.fftSize = 1024;
+      analyserRef.current.smoothingTimeConstant = 0.6;
+
+      sourceNodeRef.current
+        .connect(gainNodeRef.current)
+        .connect(analyserRef.current);
+
+
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus',
+        audioBitsPerSecond: 256000
+      });
+
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
       setDuration(0);
@@ -443,13 +506,20 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/wav' });
+        const audioBlob = new Blob(chunksRef.current, {
+          type: 'audio/webm;codecs=opus'
+        });
+
+        if (audioContextRef.current) {
+          audioContextRef.current.close();
+        }
+
         onRecordingComplete(audioBlob, duration);
         stream.getTracks().forEach(track => track.stop());
       };
 
       // Request data every 100ms to update progress
-      mediaRecorder.start(100);
+      mediaRecorder.start(10);
       setIsRecording(true);
       startTimeRef.current = Date.now();
 
