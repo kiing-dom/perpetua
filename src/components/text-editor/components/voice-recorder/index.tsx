@@ -41,9 +41,9 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
       gainNodeRef.current = audioContextRef.current.createGain();
       analyserRef.current = audioContextRef.current.createAnalyser();
 
-      gainNodeRef.current.gain.value = 2;
-      analyserRef.current.fftSize = 1024;
-      analyserRef.current.smoothingTimeConstant = 0.6;
+      gainNodeRef.current.gain.value = 1.2;
+      analyserRef.current.fftSize = 2048;
+      analyserRef.current.smoothingTimeConstant = 0.8;
 
       sourceNodeRef.current
         .connect(gainNodeRef.current)
@@ -52,7 +52,7 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
 
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: 'audio/webm;codecs=opus',
-        audioBitsPerSecond: 256000
+        audioBitsPerSecond: 320000
       });
 
       mediaRecorderRef.current = mediaRecorder;
@@ -74,8 +74,12 @@ const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) =>
           audioContextRef.current.close();
         }
 
+        stream.getTracks().forEach(track => {
+          track.stop();
+          stream.removeTrack(track);
+        });
+
         onRecordingComplete(audioBlob, duration);
-        stream.getTracks().forEach(track => track.stop());
       };
 
       // Request data every 100ms to update progress
