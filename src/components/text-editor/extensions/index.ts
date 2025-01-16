@@ -5,7 +5,7 @@ import CustomParagraph from './CustomParagraph';
 import { CustomCodeBlock } from './CustomCodeBlock';
 import VoiceNote from './VoiceNote';
 
-const extensions = [
+export const extensions = [
       StarterKit.configure({
         heading: {
           levels: [1, 2, 3]
@@ -16,6 +16,7 @@ const extensions = [
             class: 'rounded px-1.5 py-0.5 font-mono text-sm',
           },
         },
+        codeBlock: false,
       }),
       CustomCodeBlock,
       CustomParagraph,
