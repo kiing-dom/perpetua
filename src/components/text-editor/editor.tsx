@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { useEditor, EditorContent, BubbleMenu } from '@tiptap/react';
+import { extensions } from './extensions/index';
 import { Position } from './components/command-menu/types';
 import VoiceRecorder from './components/voice-recorder/index';
 import CommandMenu from './components/command-menu';
@@ -28,6 +29,8 @@ const TextEditor: React.FC<TextEditorProps> = ({
 
   const editor = useEditor({
     
+    extensions,
+
     content: defaultValue,
     onUpdate: ({ editor }) => {
       const markdown = editor.storage.markdown.getMarkdown();
