@@ -8,6 +8,13 @@ languages.forEach(([name, language]) => lowlight.register(name, language));
 
 
 export const CustomCodeBlock = CodeBlockLowlight.extend({
+  addOptions() {
+    return {
+      ...this.parent?.(),
+      lowlight,
+    };
+  },
+
   addNodeView() {
     return ({ node, editor, getPos }) => {
       const container = document.createElement('div');
